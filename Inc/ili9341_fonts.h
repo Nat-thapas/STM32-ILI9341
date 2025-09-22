@@ -1,4 +1,3 @@
-/* vim: set ai et ts=4 sw=4: */
 #ifndef __ILI9341_FONTS_H__
 #define __ILI9341_FONTS_H__
 

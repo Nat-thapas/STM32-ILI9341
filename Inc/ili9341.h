@@ -1,4 +1,3 @@
-/* vim: set ai et ts=4 sw=4: */
 #ifndef __ILI9341_H__
 #define __ILI9341_H__
 
@@ -101,6 +100,13 @@ ILI9341_HandleTypeDef ILI9341_Init(
  * @param rotation New display rotation, one of ILI9341_ROTATION_* values
  */
 void ILI9341_SetOrientation(ILI9341_HandleTypeDef* ili9341, uint8_t rotation);
+
+/**
+ * @brief Set display brightness (only for displays with backlight control via ILI9341)
+ * @param ili9341 Pointer to ILI9341 handle structure
+ * @param brightness Brightness level from 0 (min) to 255 (max)
+ */
+void ILI9341_SetBrightness(ILI9341_HandleTypeDef* ili9341, uint8_t brightness);
 
 /**
  * @brief Draw a single pixel at specified coordinates

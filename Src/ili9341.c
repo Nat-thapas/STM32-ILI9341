@@ -1,4 +1,3 @@
-/* vim: set ai et ts=4 sw=4: */
 #include "ili9341.h"
 
 #include "stm32f7xx_hal.h"
@@ -39,17 +38,17 @@ static void ILI9341_WriteCommand(ILI9341_HandleTypeDef* ili9341, uint8_t cmd) {
  * @brief Write data to the ILI9341 display
  * @param ili9341 Pointer to ILI9341 handle structure
  * @param buff Pointer to the data buffer
- * @param buff_size Size of the data buffer
+ * @param buffSize Size of the data buffer
  */
-static void ILI9341_WriteData(ILI9341_HandleTypeDef* ili9341, uint8_t* buff, size_t buff_size) {
+static void ILI9341_WriteData(ILI9341_HandleTypeDef* ili9341, uint8_t* buff, size_t buffSize) {
     HAL_GPIO_WritePin(ili9341->dc_port, ili9341->dc_pin, GPIO_PIN_SET);
 
     // split data in small chunks because HAL can't send more then 64K at once
-    while (buff_size > 0) {
-        uint16_t chunk_size = buff_size > 32768 ? 32768 : buff_size;
-        HAL_SPI_Transmit(ili9341->spi_handle, buff, chunk_size, HAL_MAX_DELAY);
-        buff += chunk_size;
-        buff_size -= chunk_size;
+    while (buffSize > 0) {
+        uint16_t chunkSize = buffSize > 32768 ? 32768 : buffSize;
+        HAL_SPI_Transmit(ili9341->spi_handle, buff, chunkSize, HAL_MAX_DELAY);
+        buff += chunkSize;
+        buffSize -= chunkSize;
     }
 }
 
@@ -368,6 +367,18 @@ void ILI9341_SetOrientation(ILI9341_HandleTypeDef* ili9341, uint8_t rotation) {
     ILI9341_Deselect(ili9341);
 }
 
+void ILI9341_SetBrightness(ILI9341_HandleTypeDef* ili9341, uint8_t brightness) {
+    ILI9341_Select(ili9341);
+
+    ILI9341_WriteCommand(ili9341, 0x51);
+    {
+        uint8_t data[] = {brightness};
+        ILI9341_WriteData(ili9341, data, sizeof(data));
+    }
+
+    ILI9341_Deselect(ili9341);
+}
+
 /**
  * @brief Draw a pixel at specified coordinates without selecting/deselecting the display
  * @param ili9341 Pointer to ILI9341 handle structure
@@ -433,18 +444,19 @@ static void ILI9341_FillRectangleFast(
     if ((x + w - 1) >= ili9341->width) w = ili9341->width - x;
     if ((y + h - 1) >= ili9341->height) h = ili9341->height - y;
 
-    ILI9341_SetAddressWindow(ili9341, x, y, x + w - 1, y + h - 1);
-
+    uint32_t totalSize = w * h;
     uint8_t buffer[ILI9341_FILL_RECT_BUFFER_SIZE * 2];
+    uint16_t chunkSize = (totalSize > ILI9341_FILL_RECT_BUFFER_SIZE) ? ILI9341_FILL_RECT_BUFFER_SIZE : totalSize;
 
     color = (color >> 8) | (color << 8);
-    for (uint32_t i = 0; i < ILI9341_FILL_RECT_BUFFER_SIZE; i++) { *(uint16_t*)&buffer[i * 2] = color; }
+    for (uint32_t i = 0; i < chunkSize; i++) { *(uint16_t*)&buffer[i * 2] = color; }
 
-    uint32_t total_size = w * h;
-    while (total_size > 0) {
-        uint16_t chunk_size = (total_size > ILI9341_FILL_RECT_BUFFER_SIZE) ? ILI9341_FILL_RECT_BUFFER_SIZE : total_size;
-        ILI9341_WriteData(ili9341, buffer, chunk_size * 2);
-        total_size -= chunk_size;
+    ILI9341_SetAddressWindow(ili9341, x, y, x + w - 1, y + h - 1);
+
+    while (totalSize > 0) {
+        ILI9341_WriteData(ili9341, buffer, chunkSize * 2);
+        totalSize -= chunkSize;
+        chunkSize = (totalSize > ILI9341_FILL_RECT_BUFFER_SIZE) ? ILI9341_FILL_RECT_BUFFER_SIZE : totalSize;
     }
 }
 
@@ -484,16 +496,16 @@ static void ILI9341_WriteChar(
     uint16_t index = (ch - 32) * font.intsPerGlyph;
     uint32_t mask = 0x80000000;
 
-    uint8_t bg_data[] = {bgcolor >> 8, bgcolor & 0xFF};
-    uint8_t fg_data[] = {color >> 8, color & 0xFF};
+    uint8_t bgData[] = {bgcolor >> 8, bgcolor & 0xFF};
+    uint8_t fgData[] = {color >> 8, color & 0xFF};
 
     ILI9341_SetAddressWindow(ili9341, x, y, x + font.width - 1, y + font.height - 1);
 
     for (uint16_t i = 0; i < font.width * font.height; i++) {
         if (font.data[index] & mask) {
-            ILI9341_WriteData(ili9341, fg_data, sizeof(fg_data));
+            ILI9341_WriteData(ili9341, fgData, sizeof(fgData));
         } else {
-            ILI9341_WriteData(ili9341, bg_data, sizeof(bg_data));
+            ILI9341_WriteData(ili9341, bgData, sizeof(bgData));
         }
         mask >>= 1;
         if (mask == 0) {
@@ -549,29 +561,29 @@ static void ILI9341_WriteCharScaled(
 ) {
     if (ch < 32 || ch > 126) ch = 32;
 
-    uint8_t bg_data[] = {bgcolor >> 8, bgcolor & 0xFF};
-    uint8_t fg_data[] = {color >> 8, color & 0xFF};
+    uint8_t bgData[] = {bgcolor >> 8, bgcolor & 0xFF};
+    uint8_t fgData[] = {color >> 8, color & 0xFF};
 
     ILI9341_SetAddressWindow(ili9341, x, y, x + font.width * scale - 1, y + font.height * scale - 1);
 
-    uint32_t bit_index = (ch - 32) * font.intsPerGlyph * 32;
+    uint32_t bitIndex = (ch - 32) * font.intsPerGlyph * 32;
     for (uint16_t row = 0; row < font.height; row++) {
-        for (uint16_t v_scale = 0; v_scale < scale; v_scale++) {
+        for (uint16_t vScale = 0; vScale < scale; vScale++) {
             for (uint16_t col = 0; col < font.width; col++) {
-                uint32_t mask = 0x80000000 >> (bit_index % 32);
-                uint16_t index = bit_index / 32;
-                for (uint16_t h_scale = 0; h_scale < scale; h_scale++) {
+                uint32_t mask = 0x80000000 >> (bitIndex % 32);
+                uint16_t index = bitIndex / 32;
+                for (uint16_t hScale = 0; hScale < scale; hScale++) {
                     if (font.data[index] & mask) {
-                        ILI9341_WriteData(ili9341, fg_data, sizeof(fg_data));
+                        ILI9341_WriteData(ili9341, fgData, sizeof(fgData));
                     } else {
-                        ILI9341_WriteData(ili9341, bg_data, sizeof(bg_data));
+                        ILI9341_WriteData(ili9341, bgData, sizeof(bgData));
                     }
                 }
-                bit_index++;
+                bitIndex++;
             }
-            bit_index -= font.width;
+            bitIndex -= font.width;
         }
-        bit_index += font.width;
+        bitIndex += font.width;
     }
 }
 
@@ -822,27 +834,27 @@ void ILI9341_DrawLineThick(
     float py = ux;
 
     // half thickness
-    float half_thickness = thickness / 2.0f;
+    float halfThickness = thickness / 2.0f;
 
     // calculate corner points
-    int16_t corners_x[4] = {
-        (int16_t)(x1 + px * half_thickness),
-        (int16_t)(x1 - px * half_thickness),
-        (int16_t)(x2 - px * half_thickness),
-        (int16_t)(x2 + px * half_thickness)
+    int16_t xCorners[4] = {
+        (int16_t)(x1 + px * halfThickness),
+        (int16_t)(x1 - px * halfThickness),
+        (int16_t)(x2 - px * halfThickness),
+        (int16_t)(x2 + px * halfThickness)
     };
-    int16_t corners_y[4] = {
-        (int16_t)(y1 + py * half_thickness),
-        (int16_t)(y1 - py * half_thickness),
-        (int16_t)(y2 - py * half_thickness),
-        (int16_t)(y2 + py * half_thickness)
+    int16_t yCorners[4] = {
+        (int16_t)(y1 + py * halfThickness),
+        (int16_t)(y1 - py * halfThickness),
+        (int16_t)(y2 - py * halfThickness),
+        (int16_t)(y2 + py * halfThickness)
     };
 
-    ILI9341_FillPolygon(ili9341, corners_x, corners_y, 4, color);
+    ILI9341_FillPolygon(ili9341, xCorners, yCorners, 4, color);
 
     if (cap) {
-        ILI9341_FillCircle(ili9341, x1, y1, half_thickness, color);
-        ILI9341_FillCircle(ili9341, x2, y2, half_thickness, color);
+        ILI9341_FillCircle(ili9341, x1, y1, halfThickness, color);
+        ILI9341_FillCircle(ili9341, x2, y2, halfThickness, color);
     }
 }
 
@@ -923,20 +935,20 @@ void ILI9341_DrawCircleThick(
         return;
     }
 
-    uint16_t r_inner = r - thickness;
-    uint16_t x_outer = r;
-    uint16_t x_inner = r_inner;
+    uint16_t ri = r - thickness;
+    uint16_t xo = r;
+    uint16_t xi = ri;
 
     ILI9341_Select(ili9341);
 
     for (int16_t y = 0; y <= r; y++) {
-        while (x_outer * x_outer + y * y > r * r) { x_outer--; }
-        while (x_inner * x_inner + y * y > r_inner * r_inner) { x_inner--; }
+        while (xo * xo + y * y > r * r) { xo--; }
+        while (xi * xi + y * y > ri * ri) { xi--; }
 
-        ILI9341_DrawLineFast(ili9341, xc - x_outer, yc + y, xc - x_inner, yc + y, color);
-        ILI9341_DrawLineFast(ili9341, xc + x_inner, yc + y, xc + x_outer, yc + y, color);
-        ILI9341_DrawLineFast(ili9341, xc - x_outer, yc - y, xc - x_inner, yc - y, color);
-        ILI9341_DrawLineFast(ili9341, xc + x_inner, yc - y, xc + x_outer, yc - y, color);
+        ILI9341_DrawLineFast(ili9341, xc - xo, yc + y, xc - xi, yc + y, color);
+        ILI9341_DrawLineFast(ili9341, xc + xi, yc + y, xc + xo, yc + y, color);
+        ILI9341_DrawLineFast(ili9341, xc - xo, yc - y, xc - xi, yc - y, color);
+        ILI9341_DrawLineFast(ili9341, xc + xi, yc - y, xc + xo, yc - y, color);
     }
 
     ILI9341_Deselect(ili9341);
@@ -1016,7 +1028,9 @@ void ILI9341_FillPolygon(ILI9341_HandleTypeDef* ili9341, int16_t* x, int16_t* y,
         for (uint16_t i = 0; i < n; i++) {
             if ((y[i] < j && y[k] >= j) || (y[k] < j && y[i] >= j)) {
                 int16_t dy = y[k] - y[i];
-                if (dy != 0 && nodes < 32) { nodeX[nodes++] = x[i] + ((int32_t)(j - y[i]) * (x[k] - x[i])) / dy; }
+                if (dy != 0 && nodes < 32) {
+                    nodeX[nodes++] = x[i] + ((int32_t)(j - y[i]) * (int32_t)(x[k] - x[i])) / dy;
+                }
             }
             k = i;
         }
@@ -1024,12 +1038,12 @@ void ILI9341_FillPolygon(ILI9341_HandleTypeDef* ili9341, int16_t* x, int16_t* y,
         // insertion sort nodeX array
         for (uint16_t i = 1; i < nodes; i++) {
             int16_t key = nodeX[i];
-            int16_t j_sort = i - 1;
-            while (j_sort >= 0 && nodeX[j_sort] > key) {
-                nodeX[j_sort + 1] = nodeX[j_sort];
-                j_sort--;
+            int16_t jSort = i - 1;
+            while (jSort >= 0 && nodeX[jSort] > key) {
+                nodeX[jSort + 1] = nodeX[jSort];
+                jSort--;
             }
-            nodeX[j_sort + 1] = key;
+            nodeX[jSort + 1] = key;
         }
 
         // fill the pixels between node pairs

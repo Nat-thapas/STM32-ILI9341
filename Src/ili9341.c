@@ -1,5 +1,6 @@
 #include "ili9341.h"
 
+#include "assert.h"
 #include "stm32f7xx_hal.h"
 
 /**
@@ -1044,7 +1045,7 @@ void ILI9341_DrawCircleThick(
 
     for (int_fast16_t y = 0; y <= r; y++) {
         while (xo * xo + y * y > r * r) { xo--; }
-        while (xi * xi + y * y > ri * ri) { xi--; }
+        while (xi * xi + y * y > ri * ri && xi > 0) { xi--; }
 
         ILI9341_DrawLineFast(ili9341, xc - xo, yc + y, xc - xi, yc + y, color);
         ILI9341_DrawLineFast(ili9341, xc + xi, yc + y, xc + xo, yc + y, color);
@@ -1173,24 +1174,8 @@ void ILI9341_DrawEllipseThick(
         return;
     }
 
-    int_fast32_t ai = rx - thickness;
-    int_fast32_t bi = ry - thickness;
-    int_fast32_t xo = rx;
-    int_fast32_t xi = ai;
-
-    ILI9341_Select(ili9341);
-
-    for (int_fast16_t y = 0; y <= ry; y++) {
-        while (xo * xo * bi * bi + y * y * ai * ai > rx * rx * ry * ry) { xo--; }
-        while (xi * xi * bi * bi + y * y * ai * ai > ai * ai * bi * bi) { xi--; }
-
-        ILI9341_DrawLineFast(ili9341, xc - xo, yc + y, xc - xi, yc + y, color);
-        ILI9341_DrawLineFast(ili9341, xc + xi, yc + y, xc + xo, yc + y, color);
-        ILI9341_DrawLineFast(ili9341, xc - xo, yc - y, xc - xi, yc - y, color);
-        ILI9341_DrawLineFast(ili9341, xc + xi, yc - y, xc + xo, yc - y, color);
-    }
-
-    ILI9341_Deselect(ili9341);
+    // The implementation is left as an exercise to the user
+    assert(false);  // Not implemented
 }
 
 void ILI9341_FillEllipse(

@@ -38,17 +38,17 @@ static void ILI9341_WriteCommand(ILI9341_HandleTypeDef* ili9341, uint8_t cmd) {
  * @brief Write data to the ILI9341 display
  * @param ili9341 Pointer to ILI9341 handle structure
  * @param buff Pointer to the data buffer
- * @param buffSize Size of the data buffer
+ * @param bufferSize Size of the data buffer
  */
-static void ILI9341_WriteData(ILI9341_HandleTypeDef* ili9341, uint8_t* buff, size_t buffSize) {
+static void ILI9341_WriteData(ILI9341_HandleTypeDef* ili9341, uint8_t* buff, size_t bufferSize) {
     HAL_GPIO_WritePin(ili9341->dc_port, ili9341->dc_pin, GPIO_PIN_SET);
 
     // split data in small chunks because HAL can't send more then 64K at once
-    while (buffSize > 0) {
-        uint16_t chunkSize = buffSize > 32768 ? 32768 : buffSize;
+    while (bufferSize > 0) {
+        uint16_t chunkSize = bufferSize > 32768 ? 32768 : bufferSize;
         HAL_SPI_Transmit(ili9341->spi_handle, buff, chunkSize, HAL_MAX_DELAY);
         buff += chunkSize;
-        buffSize -= chunkSize;
+        bufferSize -= chunkSize;
     }
 }
 
@@ -444,12 +444,12 @@ static void ILI9341_FillRectangleFast(
     if ((x + w - 1) >= ili9341->width) w = ili9341->width - x;
     if ((y + h - 1) >= ili9341->height) h = ili9341->height - y;
 
-    uint32_t totalSize = w * h;
     uint8_t buffer[ILI9341_FILL_RECT_BUFFER_SIZE * 2];
-    uint16_t chunkSize = (totalSize > ILI9341_FILL_RECT_BUFFER_SIZE) ? ILI9341_FILL_RECT_BUFFER_SIZE : totalSize;
+    size_t totalSize = w * h;
+    size_t chunkSize = totalSize > ILI9341_FILL_RECT_BUFFER_SIZE ? ILI9341_FILL_RECT_BUFFER_SIZE : totalSize;
 
     color = (color >> 8) | (color << 8);
-    for (uint32_t i = 0; i < chunkSize; i++) { *(uint16_t*)&buffer[i * 2] = color; }
+    for (size_t i = 0; i < chunkSize; i++) { *(uint16_t*)&buffer[i * 2] = color; }
 
     ILI9341_SetAddressWindow(ili9341, x, y, x + w - 1, y + h - 1);
 
@@ -480,57 +480,82 @@ void ILI9341_FillScreen(ILI9341_HandleTypeDef* ili9341, uint16_t color) {
  * @param ch ASCII character to write
  * @param font Font definition to use for rendering the character
  * @param color 16-bit character color in RGB565 format
- * @param bgcolor 16-bit background color in RGB565 format
+ * @param bgColor 16-bit background color in RGB565 format
  */
 static void ILI9341_WriteChar(
     ILI9341_HandleTypeDef* ili9341,
-    uint16_t x,
-    uint16_t y,
+    int16_t x,
+    int16_t y,
     char ch,
     ILI9341_FontDef font,
     uint16_t color,
-    uint16_t bgcolor
+    uint16_t bgColor
 ) {
+    int16_t endX = x + font.width - 1;
+    int16_t endY = y + font.height - 1;
+
+    if (endX < 0 || endY < 0 || x >= ili9341->width || y >= ili9341->height) return;
+
+    uint16_t clipStartX = x < 0 ? -x : 0;
+    uint16_t clipStartY = y < 0 ? -y : 0;
+    uint16_t clipEndX = endX >= ili9341->width ? ili9341->width - x - 1 : font.width - 1;
+    uint16_t clipEndY = endY >= ili9341->height ? ili9341->height - y - 1 : font.height - 1;
+
     if (ch < 32 || ch > 126) ch = 32;
+
+    color = (color >> 8) | (color << 8);
+    bgColor = (bgColor >> 8) | (bgColor << 8);
+
+    uint16_t buffer[ILI9341_WRITE_CHAR_BUFFER_SIZE];
+    size_t bufferIndex = 0;
 
     uint16_t index = (ch - 32) * font.intsPerGlyph;
     uint32_t mask = 0x80000000;
 
-    uint8_t bgData[] = {bgcolor >> 8, bgcolor & 0xFF};
-    uint8_t fgData[] = {color >> 8, color & 0xFF};
+    ILI9341_SetAddressWindow(ili9341, x + clipStartX, y + clipStartY, x + clipEndX, y + clipEndY);
 
-    ILI9341_SetAddressWindow(ili9341, x, y, x + font.width - 1, y + font.height - 1);
+    for (uint16_t row = 0; row < font.height; row++) {
+        for (uint16_t col = 0; col < font.width; col++) {
+            if (row >= clipStartY && row <= clipEndY && col >= clipStartX && col <= clipEndX) {
+                if (font.data[index] & mask) {
+                    buffer[bufferIndex++] = color;
+                } else {
+                    buffer[bufferIndex++] = bgColor;
+                }
 
-    for (uint16_t i = 0; i < font.width * font.height; i++) {
-        if (font.data[index] & mask) {
-            ILI9341_WriteData(ili9341, fgData, sizeof(fgData));
-        } else {
-            ILI9341_WriteData(ili9341, bgData, sizeof(bgData));
-        }
-        mask >>= 1;
-        if (mask == 0) {
-            index++;
-            mask = 0x80000000;
+                if (bufferIndex >= ILI9341_WRITE_CHAR_BUFFER_SIZE) {
+                    ILI9341_WriteData(ili9341, (uint8_t*)buffer, bufferIndex * 2);
+                    bufferIndex = 0;
+                }
+            }
+
+            mask >>= 1;
+            if (mask == 0) {
+                index++;
+                mask = 0x80000000;
+            }
         }
     }
+
+    if (bufferIndex > 0) ILI9341_WriteData(ili9341, (uint8_t*)buffer, bufferIndex * 2);
 }
 
 void ILI9341_WriteString(
     ILI9341_HandleTypeDef* ili9341,
-    uint16_t x,
-    uint16_t y,
+    int16_t x,
+    int16_t y,
     const char* str,
     ILI9341_FontDef font,
     uint16_t color,
-    uint16_t bgcolor,
+    uint16_t bgColor,
     int16_t tracking
 ) {
-    if (y + font.height - 1 > ili9341->height) return;
+    if (y >= ili9341->height) return;
 
     ILI9341_Select(ili9341);
 
-    while (*str && x + font.width - 1 < ili9341->width) {
-        ILI9341_WriteChar(ili9341, x, y, *str, font, color, bgcolor);
+    while (*str && x < ili9341->width) {
+        ILI9341_WriteChar(ili9341, x, y, *str, font, color, bgColor);
         x += font.width + tracking;
         str++;
     }
@@ -546,37 +571,61 @@ void ILI9341_WriteString(
  * @param ch ASCII character to write
  * @param font Font definition to use for rendering the character
  * @param color 16-bit character color in RGB565 format
- * @param bgcolor 16-bit background color in RGB565 format
+ * @param bgColor 16-bit background color in RGB565 format
  * @param scale Scaling factor (integer) to enlarge the character
  */
 static void ILI9341_WriteCharScaled(
     ILI9341_HandleTypeDef* ili9341,
-    uint16_t x,
-    uint16_t y,
+    int16_t x,
+    int16_t y,
     char ch,
     ILI9341_FontDef font,
     uint16_t color,
-    uint16_t bgcolor,
+    uint16_t bgColor,
     uint16_t scale
 ) {
+    int16_t endX = x + font.width * scale - 1;
+    int16_t endY = y + font.height * scale - 1;
+
+    if (endX < 0 || endY < 0 || x >= ili9341->width || y >= ili9341->height) return;
+
+    uint16_t clipStartX = x < 0 ? -x : 0;
+    uint16_t clipStartY = y < 0 ? -y : 0;
+    uint16_t clipEndX = endX >= ili9341->width ? ili9341->width - x - 1 : font.width * scale - 1;
+    uint16_t clipEndY = endY >= ili9341->height ? ili9341->height - y - 1 : font.height * scale - 1;
+
     if (ch < 32 || ch > 126) ch = 32;
 
-    uint8_t bgData[] = {bgcolor >> 8, bgcolor & 0xFF};
-    uint8_t fgData[] = {color >> 8, color & 0xFF};
+    color = (color >> 8) | (color << 8);
+    bgColor = (bgColor >> 8) | (bgColor << 8);
 
-    ILI9341_SetAddressWindow(ili9341, x, y, x + font.width * scale - 1, y + font.height * scale - 1);
+    uint16_t buffer[ILI9341_WRITE_CHAR_BUFFER_SIZE];
+    size_t bufferIndex = 0;
 
     uint32_t bitIndex = (ch - 32) * font.intsPerGlyph * 32;
+
+    ILI9341_SetAddressWindow(ili9341, x + clipStartX, y + clipStartY, x + clipEndX, y + clipEndY);
+
     for (uint16_t row = 0; row < font.height; row++) {
         for (uint16_t vScale = 0; vScale < scale; vScale++) {
+            uint16_t pixelRow = row * scale + vScale;
             for (uint16_t col = 0; col < font.width; col++) {
                 uint32_t mask = 0x80000000 >> (bitIndex % 32);
                 uint16_t index = bitIndex / 32;
                 for (uint16_t hScale = 0; hScale < scale; hScale++) {
-                    if (font.data[index] & mask) {
-                        ILI9341_WriteData(ili9341, fgData, sizeof(fgData));
-                    } else {
-                        ILI9341_WriteData(ili9341, bgData, sizeof(bgData));
+                    uint16_t pixelCol = col * scale + hScale;
+                    if (pixelRow >= clipStartY && pixelRow <= clipEndY && pixelCol >= clipStartX &&
+                        pixelCol <= clipEndX) {
+                        if (font.data[index] & mask) {
+                            buffer[bufferIndex++] = color;
+                        } else {
+                            buffer[bufferIndex++] = bgColor;
+                        }
+
+                        if (bufferIndex >= ILI9341_WRITE_CHAR_BUFFER_SIZE) {
+                            ILI9341_WriteData(ili9341, (uint8_t*)buffer, bufferIndex * 2);
+                            bufferIndex = 0;
+                        }
                     }
                 }
                 bitIndex++;
@@ -585,25 +634,27 @@ static void ILI9341_WriteCharScaled(
         }
         bitIndex += font.width;
     }
+
+    if (bufferIndex > 0) ILI9341_WriteData(ili9341, (uint8_t*)buffer, bufferIndex * 2);
 }
 
 void ILI9341_WriteStringScaled(
     ILI9341_HandleTypeDef* ili9341,
-    uint16_t x,
-    uint16_t y,
+    int16_t x,
+    int16_t y,
     const char* str,
     ILI9341_FontDef font,
     uint16_t color,
-    uint16_t bgcolor,
+    uint16_t bgColor,
     uint16_t scale,
     int16_t tracking
 ) {
-    if (y + font.height * scale - 1 > ili9341->height) return;
+    if (y >= ili9341->height) return;
 
     ILI9341_Select(ili9341);
 
-    while (*str && x + font.width * scale - 1 < ili9341->width) {
-        ILI9341_WriteCharScaled(ili9341, x, y, *str, font, color, bgcolor, scale);
+    while (*str && x < ili9341->width) {
+        ILI9341_WriteCharScaled(ili9341, x, y, *str, font, color, bgColor, scale);
         x += font.width * scale + tracking;
         str++;
     }
@@ -623,8 +674,8 @@ void ILI9341_WriteStringScaled(
  */
 static void ILI9341_WriteCharTransparent(
     ILI9341_HandleTypeDef* ili9341,
-    uint16_t x,
-    uint16_t y,
+    int16_t x,
+    int16_t y,
     char ch,
     ILI9341_FontDef font,
     uint16_t color
@@ -648,18 +699,18 @@ static void ILI9341_WriteCharTransparent(
 
 void ILI9341_WriteStringTransparent(
     ILI9341_HandleTypeDef* ili9341,
-    uint16_t x,
-    uint16_t y,
+    int16_t x,
+    int16_t y,
     const char* str,
     ILI9341_FontDef font,
     uint16_t color,
     int16_t tracking
 ) {
-    if (y + font.height - 1 > ili9341->height) return;
+    if (y >= ili9341->height) return;
 
     ILI9341_Select(ili9341);
 
-    while (*str && x + font.width - 1 < ili9341->width) {
+    while (*str && x < ili9341->width) {
         ILI9341_WriteCharTransparent(ili9341, x, y, *str, font, color);
         x += font.width + tracking;
         str++;
@@ -681,8 +732,8 @@ void ILI9341_WriteStringTransparent(
  */
 static void ILI9341_WriteCharTransparentScaled(
     ILI9341_HandleTypeDef* ili9341,
-    uint16_t x,
-    uint16_t y,
+    int16_t x,
+    int16_t y,
     char ch,
     ILI9341_FontDef font,
     uint16_t color,
@@ -709,19 +760,19 @@ static void ILI9341_WriteCharTransparentScaled(
 
 void ILI9341_WriteStringTransparentScaled(
     ILI9341_HandleTypeDef* ili9341,
-    uint16_t x,
-    uint16_t y,
+    int16_t x,
+    int16_t y,
     const char* str,
     ILI9341_FontDef font,
     uint16_t color,
     uint16_t scale,
     int16_t tracking
 ) {
-    if (y + font.height * scale - 1 > ili9341->height) return;
+    if (y >= ili9341->height) return;
 
     ILI9341_Select(ili9341);
 
-    while (*str && x + font.width * scale - 1 < ili9341->width) {
+    while (*str && x < ili9341->width) {
         ILI9341_WriteCharTransparentScaled(ili9341, x, y, *str, font, color, scale);
         x += font.width * scale + tracking;
         str++;

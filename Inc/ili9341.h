@@ -42,7 +42,8 @@
     ((((uint16_t)r & 0xF8) << 8) | (((uint16_t)g & 0xFC) << 3) | (((uint16_t)b & 0xF8) >> 3))
 
 // Other constants
-#define ILI9341_FILL_RECT_BUFFER_SIZE 512  // x 2 bytes per pixel = 1024 bytes
+#define ILI9341_FILL_RECT_BUFFER_SIZE 512   // pixels x 2 bytes per pixel = 1024 bytes
+#define ILI9341_WRITE_CHAR_BUFFER_SIZE 512  // pixels x 2 bytes per pixel = 1024 bytes
 
 /**
  * @brief ILI9341 handle structure
@@ -148,8 +149,8 @@ void ILI9341_FillScreen(ILI9341_HandleTypeDef* ili9341, uint16_t color);
  */
 void ILI9341_WriteString(
     ILI9341_HandleTypeDef* ili9341,
-    uint16_t x,
-    uint16_t y,
+    int16_t x,
+    int16_t y,
     const char* str,
     ILI9341_FontDef font,
     uint16_t color,
@@ -172,8 +173,8 @@ void ILI9341_WriteString(
  */
 void ILI9341_WriteStringScaled(
     ILI9341_HandleTypeDef* ili9341,
-    uint16_t x,
-    uint16_t y,
+    int16_t x,
+    int16_t y,
     const char* str,
     ILI9341_FontDef font,
     uint16_t color,
@@ -194,8 +195,8 @@ void ILI9341_WriteStringScaled(
  */
 void ILI9341_WriteStringTransparent(
     ILI9341_HandleTypeDef* ili9341,
-    uint16_t x,
-    uint16_t y,
+    int16_t x,
+    int16_t y,
     const char* str,
     ILI9341_FontDef font,
     uint16_t color,
@@ -216,8 +217,8 @@ void ILI9341_WriteStringTransparent(
  */
 void ILI9341_WriteStringTransparentScaled(
     ILI9341_HandleTypeDef* ili9341,
-    uint16_t x,
-    uint16_t y,
+    int16_t x,
+    int16_t y,
     const char* str,
     ILI9341_FontDef font,
     uint16_t color,

@@ -20,10 +20,13 @@ ILI9341_Touch_HandleTypeDef ILI9341_Touch_Init(
     uint16_t cs_pin,
     GPIO_TypeDef* irq_port,
     uint16_t irq_pin,
-    uint8_t rotation,
-    uint16_t width,
-    uint16_t height
+    int_fast8_t rotation,
+    int_fast16_t width,
+    int_fast16_t height
 ) {
+    width = abs(width);
+    height = abs(height);
+
     ILI9341_Touch_HandleTypeDef ili9341_touch_instance = {
         .spi_handle = spi_handle,
         .cs_port = cs_port,
@@ -40,7 +43,7 @@ ILI9341_Touch_HandleTypeDef ILI9341_Touch_Init(
     return ili9341_touch_instance;
 }
 
-void ILI9341_Touch_SetOrientation(ILI9341_Touch_HandleTypeDef* ili9341_touch, uint8_t rotation) {
+void ILI9341_Touch_SetOrientation(ILI9341_Touch_HandleTypeDef* ili9341_touch, int_fast8_t rotation) {
     if ((ili9341_touch->rotation == ILI9341_ROTATION_HORIZONTAL_1 ||
          ili9341_touch->rotation == ILI9341_ROTATION_HORIZONTAL_2) &&
         (rotation == ILI9341_ROTATION_VERTICAL_1 || rotation == ILI9341_ROTATION_VERTICAL_2)) {
@@ -69,10 +72,10 @@ bool ILI9341_Touch_GetCoordinates(ILI9341_Touch_HandleTypeDef* ili9341_touch, ui
 
     ILI9341_Touch_Select(ili9341_touch);
 
-    uint32_t avgX = 0;
-    uint32_t avgY = 0;
-    uint8_t nsamples = 0;
-    for (uint8_t i = 0; i < 16; i++) {
+    int_fast32_t avgX = 0;
+    int_fast32_t avgY = 0;
+    int_fast8_t nsamples = 0;
+    for (int_fast8_t i = 0; i < 16; i++) {
         if (!ILI9341_Touch_IsPressed(ili9341_touch)) break;
 
         nsamples++;
@@ -85,16 +88,16 @@ bool ILI9341_Touch_GetCoordinates(ILI9341_Touch_HandleTypeDef* ili9341_touch, ui
         uint8_t xRaw[2];
         HAL_SPI_TransmitReceive(ili9341_touch->spi_handle, (uint8_t*)zeroes, xRaw, sizeof(xRaw), HAL_MAX_DELAY);
 
-        avgX += (((uint16_t)xRaw[0]) << 8) | ((uint16_t)xRaw[1]);
-        avgY += (((uint16_t)yRaw[0]) << 8) | ((uint16_t)yRaw[1]);
+        avgX += (((int_fast16_t)xRaw[0]) << 8) | ((int_fast16_t)xRaw[1]);
+        avgY += (((int_fast16_t)yRaw[0]) << 8) | ((int_fast16_t)yRaw[1]);
     }
 
     ILI9341_Touch_Deselect(ili9341_touch);
 
     if (nsamples < 16) return false;
 
-    uint32_t rawX = (avgX / 16);
-    uint32_t rawY = (avgY / 16);
+    int_fast32_t rawX = (avgX / 16);
+    int_fast32_t rawY = (avgY / 16);
 
     // Uncomment this line and implement/change UART_Printf to calibrate touchscreen:
     // UART_Printf("rawX = %d, rawY = %d\r\n", rawX, rawY);

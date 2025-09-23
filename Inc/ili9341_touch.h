@@ -22,9 +22,9 @@ typedef struct {
     uint16_t cs_pin;
     GPIO_TypeDef* irq_port;
     uint16_t irq_pin;
-    uint8_t rotation;
-    uint16_t width;
-    uint16_t height;
+    int_fast8_t rotation;
+    int_fast16_t width;
+    int_fast16_t height;
 } ILI9341_Touch_HandleTypeDef;
 
 /**
@@ -51,9 +51,9 @@ ILI9341_Touch_HandleTypeDef ILI9341_Touch_Init(
     uint16_t cs_pin,
     GPIO_TypeDef* irq_port,
     uint16_t irq_pin,
-    uint8_t rotation,
-    uint16_t width,
-    uint16_t height
+    int_fast8_t rotation,
+    int_fast16_t width,
+    int_fast16_t height
 );
 
 /**
@@ -61,7 +61,7 @@ ILI9341_Touch_HandleTypeDef ILI9341_Touch_Init(
  * @param ili9341_touch Pointer to the ILI9341_Touch_HandleTypeDef structure
  * @param rotation New display rotation, one of ILI9341_ROTATION_* values
  */
-void ILI9341_Touch_SetOrientation(ILI9341_Touch_HandleTypeDef* ili9341_touch, uint8_t rotation);
+void ILI9341_Touch_SetOrientation(ILI9341_Touch_HandleTypeDef* ili9341_touch, int_fast8_t rotation);
 
 /**
  * @brief Check if the touchscreen is currently pressed

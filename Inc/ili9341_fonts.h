@@ -8,11 +8,11 @@
  */
 typedef struct {
     /** Font width in pixels per glyph */
-    const uint16_t width;
+    const int_fast16_t width;
     /** Font height in pixels per glyph */
-    const uint16_t height;
+    const int_fast16_t height;
     /** Number of integers used to store a glyph */
-    const uint16_t intsPerGlyph;
+    const int_fast16_t intsPerGlyph;
     /** Pointer to the actual font data, the data format is binary bitmap stored as uint32_t array */
     const uint32_t* data;
 } ILI9341_FontDef;

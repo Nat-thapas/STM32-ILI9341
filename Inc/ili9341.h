@@ -56,9 +56,9 @@ typedef struct {
     uint16_t dc_pin;
     GPIO_TypeDef* rst_port;
     uint16_t rst_pin;
-    uint8_t rotation;
-    uint16_t width;
-    uint16_t height;
+    int_fast8_t rotation;
+    int_fast16_t width;
+    int_fast16_t height;
 } ILI9341_HandleTypeDef;
 
 /**
@@ -90,9 +90,9 @@ ILI9341_HandleTypeDef ILI9341_Init(
     uint16_t dc_pin,
     GPIO_TypeDef* rst_port,
     uint16_t rst_pin,
-    uint8_t rotation,
-    uint16_t width,
-    uint16_t height
+    int_fast8_t rotation,
+    int_fast16_t width,
+    int_fast16_t height
 );
 
 /**
@@ -100,14 +100,14 @@ ILI9341_HandleTypeDef ILI9341_Init(
  * @param ili9341 Pointer to ILI9341 handle structure
  * @param rotation New display rotation, one of ILI9341_ROTATION_* values
  */
-void ILI9341_SetOrientation(ILI9341_HandleTypeDef* ili9341, uint8_t rotation);
+void ILI9341_SetOrientation(ILI9341_HandleTypeDef* ili9341, int_fast8_t rotation);
 
 /**
  * @brief Set display brightness (only for displays with backlight control via ILI9341)
  * @param ili9341 Pointer to ILI9341 handle structure
  * @param brightness Brightness level from 0 (min) to 255 (max)
  */
-void ILI9341_SetBrightness(ILI9341_HandleTypeDef* ili9341, uint8_t brightness);
+void ILI9341_SetBrightness(ILI9341_HandleTypeDef* ili9341, uint_fast8_t brightness);
 
 /**
  * @brief Draw a single pixel at specified coordinates
@@ -116,7 +116,7 @@ void ILI9341_SetBrightness(ILI9341_HandleTypeDef* ili9341, uint8_t brightness);
  * @param y Y coordinate of the pixel
  * @param color 16-bit color of the pixel in RGB565 format
  */
-void ILI9341_DrawPixel(ILI9341_HandleTypeDef* ili9341, int16_t x, int16_t y, uint16_t color);
+void ILI9341_DrawPixel(ILI9341_HandleTypeDef* ili9341, int_fast16_t x, int_fast16_t y, uint16_t color);
 
 /**
  * @brief Fill a rectangle with specified color
@@ -127,7 +127,14 @@ void ILI9341_DrawPixel(ILI9341_HandleTypeDef* ili9341, int16_t x, int16_t y, uin
  * @param h Height of the rectangle in pixels
  * @param color 16-bit fill color in RGB565 format
  */
-void ILI9341_FillRectangle(ILI9341_HandleTypeDef* ili9341, int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color);
+void ILI9341_FillRectangle(
+    ILI9341_HandleTypeDef* ili9341,
+    int_fast16_t x,
+    int_fast16_t y,
+    int_fast16_t w,
+    int_fast16_t h,
+    uint16_t color
+);
 
 /**
  * @brief Fill the entire screen with specified color
@@ -149,13 +156,13 @@ void ILI9341_FillScreen(ILI9341_HandleTypeDef* ili9341, uint16_t color);
  */
 void ILI9341_WriteString(
     ILI9341_HandleTypeDef* ili9341,
-    int16_t x,
-    int16_t y,
+    int_fast16_t x,
+    int_fast16_t y,
     const char* str,
     ILI9341_FontDef font,
     uint16_t color,
     uint16_t bgcolor,
-    int16_t tracking
+    int_fast16_t tracking
 );
 
 /**
@@ -173,14 +180,14 @@ void ILI9341_WriteString(
  */
 void ILI9341_WriteStringScaled(
     ILI9341_HandleTypeDef* ili9341,
-    int16_t x,
-    int16_t y,
+    int_fast16_t x,
+    int_fast16_t y,
     const char* str,
     ILI9341_FontDef font,
     uint16_t color,
     uint16_t bgcolor,
-    uint16_t scale,
-    int16_t tracking
+    int_fast16_t scale,
+    int_fast16_t tracking
 );
 
 /**
@@ -195,12 +202,12 @@ void ILI9341_WriteStringScaled(
  */
 void ILI9341_WriteStringTransparent(
     ILI9341_HandleTypeDef* ili9341,
-    int16_t x,
-    int16_t y,
+    int_fast16_t x,
+    int_fast16_t y,
     const char* str,
     ILI9341_FontDef font,
     uint16_t color,
-    int16_t tracking
+    int_fast16_t tracking
 );
 
 /**
@@ -217,13 +224,13 @@ void ILI9341_WriteStringTransparent(
  */
 void ILI9341_WriteStringTransparentScaled(
     ILI9341_HandleTypeDef* ili9341,
-    int16_t x,
-    int16_t y,
+    int_fast16_t x,
+    int_fast16_t y,
     const char* str,
     ILI9341_FontDef font,
     uint16_t color,
-    uint16_t scale,
-    int16_t tracking
+    int_fast16_t scale,
+    int_fast16_t tracking
 );
 
 /**
@@ -238,10 +245,10 @@ void ILI9341_WriteStringTransparentScaled(
  */
 void ILI9341_DrawImage(
     ILI9341_HandleTypeDef* ili9341,
-    uint16_t x,
-    uint16_t y,
-    uint16_t w,
-    uint16_t h,
+    int_fast16_t x,
+    int_fast16_t y,
+    int_fast16_t w,
+    int_fast16_t h,
     const uint16_t* data
 );
 
@@ -261,7 +268,14 @@ void ILI9341_InvertColors(ILI9341_HandleTypeDef* ili9341, bool invert);
  * @param y2 Y coordinate of the end point
  * @param color 16-bit line color in RGB565 format
  */
-void ILI9341_DrawLine(ILI9341_HandleTypeDef* ili9341, int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint16_t color);
+void ILI9341_DrawLine(
+    ILI9341_HandleTypeDef* ili9341,
+    int_fast16_t x1,
+    int_fast16_t y1,
+    int_fast16_t x2,
+    int_fast16_t y2,
+    uint16_t color
+);
 
 /**
  * @brief Draw a thick line between two points
@@ -276,12 +290,12 @@ void ILI9341_DrawLine(ILI9341_HandleTypeDef* ili9341, int16_t x1, int16_t y1, in
  */
 void ILI9341_DrawLineThick(
     ILI9341_HandleTypeDef* ili9341,
-    int16_t x1,
-    int16_t y1,
-    int16_t x2,
-    int16_t y2,
+    int_fast16_t x1,
+    int_fast16_t y1,
+    int_fast16_t x2,
+    int_fast16_t y2,
     uint16_t color,
-    uint16_t thickness,
+    int_fast16_t thickness,
     bool cap
 );
 
@@ -294,7 +308,14 @@ void ILI9341_DrawLineThick(
  * @param h Height of the rectangle in pixels
  * @param color 16-bit rectangle color in RGB565 format
  */
-void ILI9341_DrawRectangle(ILI9341_HandleTypeDef* ili9341, int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color);
+void ILI9341_DrawRectangle(
+    ILI9341_HandleTypeDef* ili9341,
+    int_fast16_t x,
+    int_fast16_t y,
+    int_fast16_t w,
+    int_fast16_t h,
+    uint16_t color
+);
 
 /**
  * @brief Draw a thick rectangle outline
@@ -308,12 +329,12 @@ void ILI9341_DrawRectangle(ILI9341_HandleTypeDef* ili9341, int16_t x, int16_t y,
  */
 void ILI9341_DrawRectangleThick(
     ILI9341_HandleTypeDef* ili9341,
-    int16_t x,
-    int16_t y,
-    int16_t w,
-    int16_t h,
+    int_fast16_t x,
+    int_fast16_t y,
+    int_fast16_t w,
+    int_fast16_t h,
     uint16_t color,
-    uint16_t thickness
+    int_fast16_t thickness
 );
 
 /**
@@ -324,7 +345,7 @@ void ILI9341_DrawRectangleThick(
  * @param r Radius of the circle
  * @param color 16-bit circle color in RGB565 format
  */
-void ILI9341_DrawCircle(ILI9341_HandleTypeDef* ili9341, int16_t x, int16_t y, uint16_t r, uint16_t color);
+void ILI9341_DrawCircle(ILI9341_HandleTypeDef* ili9341, int_fast16_t x, int_fast16_t y, int_fast16_t r, uint16_t color);
 
 /**
  * @brief Draw a thick circle outline
@@ -337,11 +358,11 @@ void ILI9341_DrawCircle(ILI9341_HandleTypeDef* ili9341, int16_t x, int16_t y, ui
  */
 void ILI9341_DrawCircleThick(
     ILI9341_HandleTypeDef* ili9341,
-    int16_t x0,
-    int16_t y0,
-    uint16_t r,
+    int_fast16_t x0,
+    int_fast16_t y0,
+    int_fast16_t r,
     uint16_t color,
-    uint16_t thickness
+    int_fast16_t thickness
 );
 
 /**
@@ -352,7 +373,63 @@ void ILI9341_DrawCircleThick(
  * @param r Radius of the circle
  * @param color 16-bit circle color in RGB565 format
  */
-void ILI9341_FillCircle(ILI9341_HandleTypeDef* ili9341, int16_t x, int16_t y, uint16_t r, uint16_t color);
+void ILI9341_FillCircle(ILI9341_HandleTypeDef* ili9341, int_fast16_t x, int_fast16_t y, int_fast16_t r, uint16_t color);
+
+/**
+ * @brief Draw a thin ellipse outline
+ * @param ili9341 Pointer to ILI9341 handle structure
+ * @param xc X coordinate of the center of the ellipse
+ * @param yc Y coordinate of the center of the ellipse
+ * @param rx Horizontal radius of the ellipse
+ * @param ry Vertical radius of the ellipse
+ * @param color 16-bit ellipse color in RGB565 format
+ */
+void ILI9341_DrawEllipse(
+    ILI9341_HandleTypeDef* ili9341,
+    int_fast16_t xc,
+    int_fast16_t yc,
+    int_fast16_t rx,
+    int_fast16_t ry,
+    uint16_t color
+);
+
+/**
+ * @brief Draw a thick ellipse outline
+ * @param ili9341 Pointer to ILI9341 handle structure
+ * @param xc X coordinate of the center of the ellipse
+ * @param yc Y coordinate of the center of the ellipse
+ * @param rx Horizontal radius of the ellipse
+ * @param ry Vertical radius of the ellipse
+ * @param color 16-bit ellipse color in RGB565 format
+ * @param thickness Ellipse line thickness in pixels, must be >= 1
+ */
+void ILI9341_DrawEllipseThick(
+    ILI9341_HandleTypeDef* ili9341,
+    int_fast16_t xc,
+    int_fast16_t yc,
+    int_fast16_t rx,
+    int_fast16_t ry,
+    uint16_t color,
+    int_fast16_t thickness
+);
+
+/**
+ * @brief Fill an ellipse
+ * @param ili9341 Pointer to ILI9341 handle structure
+ * @param xc X coordinate of the center of the ellipse
+ * @param yc Y coordinate of the center of the ellipse
+ * @param rx Horizontal radius of the ellipse
+ * @param ry Vertical radius of the ellipse
+ * @param color 16-bit ellipse color in RGB565 format
+ */
+void ILI9341_FillEllipse(
+    ILI9341_HandleTypeDef* ili9341,
+    int_fast16_t xc,
+    int_fast16_t yc,
+    int_fast16_t rx,
+    int_fast16_t ry,
+    uint16_t color
+);
 
 /**
  * @brief Draw a polygon outline
@@ -363,7 +440,7 @@ void ILI9341_FillCircle(ILI9341_HandleTypeDef* ili9341, int16_t x, int16_t y, ui
  * @param color 16-bit polygon color in RGB565 format
  * @note The polygon is automatically closed by connecting the last vertex to the first.
  */
-void ILI9341_DrawPolygon(ILI9341_HandleTypeDef* ili9341, int16_t* x, int16_t* y, uint16_t n, uint16_t color);
+void ILI9341_DrawPolygon(ILI9341_HandleTypeDef* ili9341, int16_t* x, int16_t* y, size_t n, uint16_t color);
 
 /**
  * @brief Draw a thick polygon outline
@@ -380,9 +457,9 @@ void ILI9341_DrawPolygonThick(
     ILI9341_HandleTypeDef* ili9341,
     int16_t* x,
     int16_t* y,
-    uint16_t n,
+    size_t n,
     uint16_t color,
-    uint16_t thickness,
+    int_fast16_t thickness,
     bool cap
 );
 
@@ -396,6 +473,6 @@ void ILI9341_DrawPolygonThick(
  * @note The algorithm used is scanline algorithm, with support for concave and self-intersecting polygons. Max
  * intersections for scanline is 32.
  */
-void ILI9341_FillPolygon(ILI9341_HandleTypeDef* ili9341, int16_t* x, int16_t* y, uint16_t n, uint16_t color);
+void ILI9341_FillPolygon(ILI9341_HandleTypeDef* ili9341, int16_t* x, int16_t* y, size_t n, uint16_t color);
 
 #endif  // __ILI9341_H__

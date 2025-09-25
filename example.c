@@ -41,7 +41,7 @@ int main(void) {
         ILI9341_WriteString(
             &ili9341,
             5,
-            5,
+            15,
             "Hello, World!",
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
@@ -51,7 +51,7 @@ int main(void) {
         ILI9341_WriteString(
             &ili9341,
             5,
-            21,
+            31,
             "Welcome to the STM32 ILI9341 Test Suite.",
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
@@ -61,7 +61,7 @@ int main(void) {
         ILI9341_WriteString(
             &ili9341,
             5,
-            37,
+            47,
             "Press B1 to continue",
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
@@ -75,7 +75,7 @@ int main(void) {
         ILI9341_WriteString(
             &ili9341,
             5,
-            5,
+            15,
             "Fill screen test",
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
@@ -97,7 +97,7 @@ int main(void) {
         ILI9341_WriteString(
             &ili9341,
             5,
-            5,
+            15,
             "Fill rectangle test",
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
@@ -123,7 +123,7 @@ int main(void) {
         ILI9341_WriteString(
             &ili9341,
             5,
-            5,
+            15,
             "Write string fonts test",
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
@@ -135,7 +135,7 @@ int main(void) {
         ILI9341_WriteString(
             &ili9341,
             10,
-            25,
+            35,
             "Terminus8x16",
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
@@ -145,7 +145,7 @@ int main(void) {
         ILI9341_WriteString(
             &ili9341,
             10,
-            45,
+            55,
             "Terminus12x24",
             ILI9341_Font_Terminus12x24,
             ILI9341_COLOR_BLACK,
@@ -155,7 +155,7 @@ int main(void) {
         ILI9341_WriteString(
             &ili9341,
             10,
-            75,
+            80,
             "Terminus12x24b",
             ILI9341_Font_Terminus12x24b,
             ILI9341_COLOR_BLACK,
@@ -165,7 +165,7 @@ int main(void) {
         ILI9341_WriteString(
             &ili9341,
             10,
-            105,
+            115,
             "Terminus16x32",
             ILI9341_Font_Terminus16x32,
             ILI9341_COLOR_BLACK,
@@ -175,7 +175,7 @@ int main(void) {
         ILI9341_WriteString(
             &ili9341,
             10,
-            140,
+            150,
             "Terminus16x32b",
             ILI9341_Font_Terminus16x32b,
             ILI9341_COLOR_BLACK,
@@ -185,7 +185,7 @@ int main(void) {
         ILI9341_WriteString(
             &ili9341,
             10,
-            175,
+            165,
             "Spleen5x8",
             ILI9341_Font_Spleen5x8,
             ILI9341_COLOR_BLACK,
@@ -205,7 +205,7 @@ int main(void) {
         ILI9341_WriteString(
             &ili9341,
             10,
-            205,
+            220,
             "Spleen16x32",
             ILI9341_Font_Spleen16x32,
             ILI9341_COLOR_BLACK,
@@ -219,7 +219,56 @@ int main(void) {
         ILI9341_WriteString(
             &ili9341,
             5,
+            15,
+            "Write string codepoints test",
+            ILI9341_Font_Terminus8x16,
+            ILI9341_COLOR_BLACK,
+            ILI9341_COLOR_WHITE,
+            0
+        );
+        HAL_Delay(250);
+        waitForButtonPress();
+        for (int i = 1; i < 8; i++) {
+            char str[33];
+            for (int j = i * 32; j < (i * 32) + 32; j++) { str[j - (i * 32)] = (char)j; }
+            str[32] = '\0';
+            ILI9341_WriteString(
+                &ili9341,
+                10,
+                35 + (i * 16),
+                str,
+                ILI9341_Font_Terminus8x16,
+                ILI9341_COLOR_BLACK,
+                ILI9341_COLOR_WHITE,
+                0
+            );
+        }
+        HAL_Delay(250);
+        waitForButtonPress();
+        ILI9341_FillScreen(&ili9341, ILI9341_COLOR_WHITE);
+        for (int i = 1; i < 8; i++) {
+            char str[33];
+            for (int j = i * 32; j < (i * 32) + 32; j++) { str[j - (i * 32)] = (char)j; }
+            str[32] = '\0';
+            ILI9341_WriteString(
+                &ili9341,
+                10,
+                35 + (i * 20),
+                str,
+                ILI9341_Font_Manop8x20,
+                ILI9341_COLOR_BLACK,
+                ILI9341_COLOR_WHITE,
+                0
+            );
+        }
+        HAL_Delay(250);
+        waitForButtonPress();
+
+        ILI9341_FillScreen(&ili9341, ILI9341_COLOR_WHITE);
+        ILI9341_WriteString(
+            &ili9341,
             5,
+            15,
             "Write string scaled test",
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
@@ -231,7 +280,7 @@ int main(void) {
         ILI9341_WriteStringScaled(
             &ili9341,
             10,
-            30,
+            35,
             "Hello, World!",
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
@@ -242,7 +291,7 @@ int main(void) {
         ILI9341_WriteStringScaled(
             &ili9341,
             10,
-            50,
+            70,
             "Hello, World!",
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
@@ -253,7 +302,7 @@ int main(void) {
         ILI9341_WriteStringScaled(
             &ili9341,
             10,
-            90,
+            120,
             "Hello, World!",
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
@@ -264,7 +313,7 @@ int main(void) {
         ILI9341_WriteStringScaled(
             &ili9341,
             40,
-            210,
+            245,
             "Hello, World!",
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
@@ -279,7 +328,78 @@ int main(void) {
         ILI9341_WriteString(
             &ili9341,
             5,
+            15,
+            "Write string thai test",
+            ILI9341_Font_Terminus8x16,
+            ILI9341_COLOR_BLACK,
+            ILI9341_COLOR_WHITE,
+            0
+        );
+        HAL_Delay(250);
+        waitForButtonPress();
+        ILI9341_WriteStringScaled(
+            &ili9341,
+            10,
+            35,
+            "Hello, World! สวัสดีชาวโลก",
+            ILI9341_Font_Manop8x20,
+            ILI9341_COLOR_BLACK,
+            ILI9341_COLOR_WHITE,
+            1,
+            0
+        );
+        ILI9341_WriteStringScaled(
+            &ili9341,
+            10,
+            70,
+            "Hello, World! สวัสดีชาวโลก",
+            ILI9341_Font_Manop8x20,
+            ILI9341_COLOR_BLACK,
+            ILI9341_COLOR_WHITE,
+            2,
+            0
+        );
+        ILI9341_WriteStringScaled(
+            &ili9341,
+            10,
+            120,
+            "Hello, World!",
+            ILI9341_Font_Manop8x20,
+            ILI9341_COLOR_BLACK,
+            ILI9341_COLOR_WHITE,
+            3,
+            0
+        );
+        ILI9341_WriteStringScaled(
+            &ili9341,
+            10,
+            180,
+            "สวัสดีชาวโลก",
+            ILI9341_Font_Manop8x20,
+            ILI9341_COLOR_BLACK,
+            ILI9341_COLOR_WHITE,
+            3,
+            0
+        );
+        ILI9341_WriteStringScaled(
+            &ili9341,
+            40,
+            245,
+            "Hello สวัสดีชาวโลก",
+            ILI9341_Font_Manop8x20,
+            ILI9341_COLOR_BLACK,
+            ILI9341_COLOR_WHITE,
+            3,
+            0
+        );
+        HAL_Delay(250);
+        waitForButtonPress();
+
+        ILI9341_FillScreen(&ili9341, ILI9341_COLOR_WHITE);
+        ILI9341_WriteString(
+            &ili9341,
             5,
+            15,
             "Write string transparent test",
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
@@ -297,7 +417,7 @@ int main(void) {
         ILI9341_WriteStringTransparent(
             &ili9341,
             10,
-            30,
+            40,
             "Hello, World!",
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_WHITE,
@@ -306,7 +426,7 @@ int main(void) {
         ILI9341_WriteStringTransparentScaled(
             &ili9341,
             10,
-            50,
+            70,
             "Hello, World!",
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_WHITE,
@@ -316,7 +436,7 @@ int main(void) {
         ILI9341_WriteStringTransparentScaled(
             &ili9341,
             10,
-            90,
+            120,
             "Hello, World!",
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_WHITE,
@@ -326,7 +446,7 @@ int main(void) {
         ILI9341_WriteStringTransparentScaled(
             &ili9341,
             40,
-            210,
+            245,
             "Hello, World!",
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_WHITE,
@@ -340,7 +460,7 @@ int main(void) {
         // ILI9341_WriteString(
         //     &ili9341,
         //     5,
-        //     5,
+        //     15,
         //     "Draw image test",
         //     ILI9341_Font_Terminus8x16,
         //     ILI9341_COLOR_BLACK,
@@ -356,7 +476,7 @@ int main(void) {
         ILI9341_WriteString(
             &ili9341,
             5,
-            5,
+            15,
             "Inverted colors test",
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
@@ -375,7 +495,7 @@ int main(void) {
         ILI9341_WriteString(
             &ili9341,
             5,
-            5,
+            15,
             "Draw line test",
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
@@ -401,7 +521,7 @@ int main(void) {
         ILI9341_WriteString(
             &ili9341,
             5,
-            5,
+            15,
             "Draw line thick test",
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
@@ -429,7 +549,7 @@ int main(void) {
         ILI9341_WriteString(
             &ili9341,
             5,
-            5,
+            15,
             "Draw rectangle test",
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
@@ -455,7 +575,7 @@ int main(void) {
         ILI9341_WriteString(
             &ili9341,
             5,
-            5,
+            15,
             "Draw rectangle thick test",
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
@@ -482,7 +602,7 @@ int main(void) {
         ILI9341_WriteString(
             &ili9341,
             5,
-            5,
+            15,
             "Draw circle test",
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
@@ -501,7 +621,7 @@ int main(void) {
         ILI9341_WriteString(
             &ili9341,
             5,
-            5,
+            15,
             "Draw circle thick test",
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
@@ -527,7 +647,7 @@ int main(void) {
         ILI9341_WriteString(
             &ili9341,
             5,
-            5,
+            15,
             "Fill circle test",
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
@@ -546,7 +666,7 @@ int main(void) {
         ILI9341_WriteString(
             &ili9341,
             5,
-            5,
+            15,
             "Draw ellipse test",
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
@@ -572,7 +692,7 @@ int main(void) {
         ILI9341_WriteString(
             &ili9341,
             5,
-            5,
+            15,
             "Draw ellipse thick test",
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
@@ -599,7 +719,7 @@ int main(void) {
         ILI9341_WriteString(
             &ili9341,
             5,
-            5,
+            15,
             "Fill ellipse test",
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
@@ -625,7 +745,7 @@ int main(void) {
         ILI9341_WriteString(
             &ili9341,
             5,
-            5,
+            15,
             "Draw polygon test",
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
@@ -651,7 +771,7 @@ int main(void) {
         ILI9341_WriteString(
             &ili9341,
             5,
-            5,
+            15,
             "Draw polygon thick test",
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
@@ -685,7 +805,7 @@ int main(void) {
         ILI9341_WriteString(
             &ili9341,
             5,
-            5,
+            15,
             "Fill polygon test",
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
@@ -713,7 +833,7 @@ int main(void) {
         ILI9341_WriteString(
             &ili9341,
             5,
-            5,
+            15,
             "Touch test (vertical-1)",
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
@@ -736,7 +856,7 @@ int main(void) {
         ILI9341_WriteString(
             &ili9341,
             5,
-            5,
+            15,
             "Touch test (vertical-2)",
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
@@ -759,7 +879,7 @@ int main(void) {
         ILI9341_WriteString(
             &ili9341,
             5,
-            5,
+            15,
             "Touch test (horizontal-1)",
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
@@ -781,7 +901,7 @@ int main(void) {
         ILI9341_WriteString(
             &ili9341,
             5,
-            5,
+            15,
             "Touch test (horizontal-2)",
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,

@@ -1,6 +1,5 @@
 #include "ili9341.h"
 
-#include "assert.h"
 #include "stm32f7xx_hal.h"
 
 /**
@@ -894,12 +893,7 @@ void ILI9341_DrawLineThick(
     int_fast16_t thickness,
     bool cap
 ) {
-    if (thickness == 0) return;
-    thickness = abs(thickness);
-    if (thickness == 1) {
-        ILI9341_DrawLine(ili9341, x1, y1, x2, y2, color);
-        return;
-    }
+    if (thickness <= 0) return;
 
     // calculate line vector
     int_fast16_t dx = x2 - x1;
@@ -960,8 +954,7 @@ void ILI9341_DrawRectangleThick(
     uint16_t color,
     int_fast16_t thickness
 ) {
-    if (thickness == 0) return;
-    thickness = abs(thickness);
+    if (thickness <= 0) return;
 
     ILI9341_Select(ili9341);
 
@@ -984,10 +977,10 @@ void ILI9341_DrawCircle(
     if (r == 0 || xc + r < 0 || xc - r >= ili9341->width || yc + r < 0 || yc - r >= ili9341->height) return;
 
     int_fast16_t f = 1 - r;
-    int_fast16_t ddF_x = 1;
-    int_fast16_t ddF_y = -2 * r;
-    int_fast16_t x = 0;
-    int_fast16_t y = r;
+    int_fast16_t dfx = -2 * r;
+    int_fast16_t dfy = 1;
+    int_fast16_t x = r;
+    int_fast16_t y = 0;
 
     ILI9341_Select(ili9341);
 
@@ -996,15 +989,15 @@ void ILI9341_DrawCircle(
     ILI9341_DrawPixelFast(ili9341, xc + r, yc, color);
     ILI9341_DrawPixelFast(ili9341, xc - r, yc, color);
 
-    while (x < y) {
+    while (x >= y) {
         if (f >= 0) {
-            y--;
-            ddF_y += 2;
-            f += ddF_y;
+            x--;
+            dfx += 2;
+            f += dfx;
         }
-        x++;
-        ddF_x += 2;
-        f += ddF_x;
+        y++;
+        dfy += 2;
+        f += dfy;
 
         ILI9341_DrawPixelFast(ili9341, xc + x, yc + y, color);
         ILI9341_DrawPixelFast(ili9341, xc - x, yc + y, color);
@@ -1028,14 +1021,9 @@ void ILI9341_DrawCircleThick(
     int_fast16_t thickness
 ) {
     r = abs(r);
-    if (r == 0 || thickness == 0 || xc + r < 0 || xc - r >= ili9341->width || yc + r < 0 || yc - r >= ili9341->height)
+    if (r == 0 || thickness <= 0 || xc + r < 0 || xc - r >= ili9341->width || yc + r < 0 || yc - r >= ili9341->height)
         return;
-    thickness = abs(thickness);
     if (thickness > r) thickness = r;
-    if (thickness == 1) {
-        ILI9341_DrawCircle(ili9341, xc, yc, r, color);
-        return;
-    }
 
     int_fast16_t ri = r - thickness;
     int_fast16_t xo = r;
@@ -1066,14 +1054,32 @@ void ILI9341_FillCircle(
     r = abs(r);
     if (r == 0 || xc + r < 0 || xc - r >= ili9341->width || yc + r < 0 || yc - r >= ili9341->height) return;
 
+    int_fast16_t f = 1 - r;
+    int_fast16_t dfx = -2 * r;
+    int_fast16_t dfy = 1;
     int_fast16_t x = r;
+    int_fast16_t y = 0;
 
     ILI9341_Select(ili9341);
 
-    for (int_fast16_t y = 0; y <= r; y++) {
-        while (x * x + y * y > r * r) { x--; }
+    ILI9341_DrawLineFast(ili9341, xc - r, yc, xc + r, yc, color);
+    ILI9341_DrawPixelFast(ili9341, xc, yc + r, color);
+    ILI9341_DrawPixelFast(ili9341, xc, yc - r, color);
+
+    while (x >= y) {
+        if (f >= 0) {
+            x--;
+            dfx += 2;
+            f += dfx;
+        }
+        y++;
+        dfy += 2;
+        f += dfy;
+
         ILI9341_DrawLineFast(ili9341, xc - x, yc + y, xc + x, yc + y, color);
         ILI9341_DrawLineFast(ili9341, xc - x, yc - y, xc + x, yc - y, color);
+        ILI9341_DrawLineFast(ili9341, xc - y, yc + x, xc + y, yc + x, color);
+        ILI9341_DrawLineFast(ili9341, xc - y, yc - x, xc + y, yc - x, color);
     }
 
     ILI9341_Deselect(ili9341);
@@ -1104,13 +1110,9 @@ void ILI9341_DrawEllipse(
 
     ILI9341_Select(ili9341);
 
-    // Plot initial points
-    ILI9341_DrawPixelFast(ili9341, xc + x, yc + y, color);
-    ILI9341_DrawPixelFast(ili9341, xc - x, yc + y, color);
-    ILI9341_DrawPixelFast(ili9341, xc + x, yc - y, color);
-    ILI9341_DrawPixelFast(ili9341, xc - x, yc - y, color);
+    ILI9341_DrawPixelFast(ili9341, xc, yc + ry, color);
+    ILI9341_DrawPixelFast(ili9341, xc, yc - ry, color);
 
-    // Region 1
     p = ry2 - (rx2 * ry) + (rx2 / 4);
     while (px < py) {
         x++;
@@ -1129,9 +1131,7 @@ void ILI9341_DrawEllipse(
         ILI9341_DrawPixelFast(ili9341, xc - x, yc - y, color);
     }
 
-    // Region 2
-    // p = ry2 * (x + 0.5) * (x + 0.5) + rx2 * (y - 1) * (y - 1) - rx2 * ry2;
-    p = ry2 * (x * x + x) + ry2 / 4 + rx2 * (y - 1) * (y - 1) - rx2 * ry2;
+    p = ry2 * (x + 1) * (x + 1) + rx2 * (y - 1) * (y - 1) - rx2 * ry2;
     while (y > 0) {
         y--;
         py -= twoRx2;
@@ -1163,19 +1163,32 @@ void ILI9341_DrawEllipseThick(
 ) {
     rx = abs(rx);
     ry = abs(ry);
-    if (rx == 0 || ry == 0 || thickness == 0 || xc + rx < 0 || xc - rx >= ili9341->width || yc + ry < 0 ||
+    if (rx == 0 || ry == 0 || thickness <= 0 || xc + rx < 0 || xc - rx >= ili9341->width || yc + ry < 0 ||
         yc - ry >= ili9341->height)
         return;
-    thickness = abs(thickness);
-    if (thickness > rx) thickness = rx;
-    if (thickness > ry) thickness = ry;
-    if (thickness == 1) {
-        ILI9341_DrawEllipse(ili9341, xc, yc, rx, ry, color);
+    if (thickness > rx || thickness > ry) {
+        ILI9341_FillEllipse(ili9341, xc, yc, rx, ry, color);
         return;
     }
 
-    // The implementation is left as an exercise to the user
-    assert(false);  // Not implemented
+    int_fast16_t x = rx;
+    int_fast16_t y = 0;
+    int_fast16_t rxi = rx - thickness;
+    int_fast16_t ryi = ry - thickness;
+    int_fast16_t xi = rxi;
+
+    ILI9341_Select(ili9341);
+
+    for (int_fast16_t y = 0; y <= ry; y++) {
+        while (x * x * ry * ry + y * y * rx * rx > rx * rx * ry * ry) { x--; }
+        while (xi * xi * ryi * ryi + y * y * rxi * rxi > rxi * rxi * ryi * ryi && xi > 0) { xi--; }
+        ILI9341_DrawLineFast(ili9341, xc - x, yc + y, xc - xi, yc + y, color);
+        ILI9341_DrawLineFast(ili9341, xc + xi, yc + y, xc + x, yc + y, color);
+        ILI9341_DrawLineFast(ili9341, xc - x, yc - y, xc - xi, yc - y, color);
+        ILI9341_DrawLineFast(ili9341, xc + xi, yc - y, xc + x, yc - y, color);
+    }
+
+    ILI9341_Deselect(ili9341);
 }
 
 void ILI9341_FillEllipse(
@@ -1191,12 +1204,50 @@ void ILI9341_FillEllipse(
     if (rx == 0 || ry == 0 || xc + rx < 0 || xc - rx >= ili9341->width || yc + ry < 0 || yc - ry >= ili9341->height)
         return;
 
-    int_fast16_t x = rx;
+    int_fast32_t rx2 = rx * rx;
+    int_fast32_t ry2 = ry * ry;
+    int_fast32_t twoRx2 = 2 * rx2;
+    int_fast32_t twoRy2 = 2 * ry2;
+    int_fast32_t p;
+    int_fast32_t x = 0;
+    int_fast32_t y = ry;
+    int_fast32_t px = 0;
+    int_fast32_t py = twoRx2 * y;
 
     ILI9341_Select(ili9341);
 
-    for (int_fast16_t y = 0; y <= ry; y++) {
-        while (x * x * ry * ry + y * y * rx * rx > rx * rx * ry * ry) { x--; }
+    ILI9341_DrawLineFast(ili9341, xc - rx, yc, xc + rx, yc, color);
+    ILI9341_DrawPixelFast(ili9341, xc, yc + ry, color);
+    ILI9341_DrawPixelFast(ili9341, xc, yc - ry, color);
+
+    p = ry2 - (rx2 * ry) + (rx2 / 4);
+    while (px < py) {
+        x++;
+        px += twoRy2;
+        if (p < 0) {
+            p += ry2 + px;
+        } else {
+            y--;
+            py -= twoRx2;
+            p += ry2 + px - py;
+        }
+
+        ILI9341_DrawLineFast(ili9341, xc - x, yc + y, xc + x, yc + y, color);
+        ILI9341_DrawLineFast(ili9341, xc - x, yc - y, xc + x, yc - y, color);
+    }
+
+    p = ry2 * (x + 1) * (x + 1) + ry2 / 4 + rx2 * (y - 1) * (y - 1) - rx2 * ry2;
+    while (y > 0) {
+        y--;
+        py -= twoRx2;
+        if (p > 0) {
+            p += rx2 - py;
+        } else {
+            x++;
+            px += twoRy2;
+            p += rx2 - py + px;
+        }
+
         ILI9341_DrawLineFast(ili9341, xc - x, yc + y, xc + x, yc + y, color);
         ILI9341_DrawLineFast(ili9341, xc - x, yc - y, xc + x, yc - y, color);
     }
@@ -1224,12 +1275,7 @@ void ILI9341_DrawPolygonThick(
     int_fast16_t thickness,
     bool cap
 ) {
-    if (n < 2 || thickness == 0) return;
-    thickness = abs(thickness);
-    if (thickness == 1) {
-        ILI9341_DrawPolygon(ili9341, x, y, n, color);
-        return;
-    }
+    if (n < 2 || thickness <= 0) return;
 
     for (size_t i = 0; i < n - 1; i++) {
         ILI9341_DrawLineThick(ili9341, x[i], y[i], x[i + 1], y[i + 1], color, thickness, cap);

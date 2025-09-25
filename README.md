@@ -69,7 +69,7 @@ target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
 )
 ```
 
-2. To add custom font, use the [export_font.py](./export_font.py) script (place it in a folder along with .bdf files and run it), this is not a "production-ready" script and may require modifications to use with some fonts. After you generate the font data file with the script, rename it appropiately and add it to the Src folder, then add the font declarations to the [header file](./Inc/ili9341_fonts.h)
+2. To add custom font, use the [export_font.py](./export_font.py) script (place it in a folder along with .bdf files and run it), this is not a "production-ready" script and may require modifications to use with some fonts. After you generate the font data file with the script, rename it appropiately and add it to the Src folder, then add the font declarations to the [header file](./Inc/ili9341_fonts.h). Note that only .bdf bitmap fonts are supported currently.
 
 ### Original license for [afiskon/stm32-ili9341][u0] (upstream of this fork)
 

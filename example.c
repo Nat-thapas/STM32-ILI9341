@@ -85,13 +85,12 @@ int main(void) {
         HAL_Delay(250);
         waitForButtonPress();
         ILI9341_FillScreen(&ili9341, ILI9341_COLOR_RED);
-        HAL_Delay(500);
+        HAL_Delay(250);
         ILI9341_FillScreen(&ili9341, ILI9341_COLOR_GREEN);
-        HAL_Delay(500);
+        HAL_Delay(250);
         ILI9341_FillScreen(&ili9341, ILI9341_COLOR_BLUE);
-        HAL_Delay(500);
+        HAL_Delay(250);
         ILI9341_FillScreen(&ili9341, ILI9341_COLOR_BLACK);
-        HAL_Delay(200);
         waitForButtonPress();
 
         ILI9341_FillScreen(&ili9341, ILI9341_COLOR_WHITE);
@@ -116,7 +115,6 @@ int main(void) {
                 50,
                 HAL_RNG_GetRandomNumber(&hrng) % 0xFFFF
             );
-            HAL_Delay(250);
         }
         HAL_Delay(250);
         waitForButtonPress();
@@ -144,7 +142,6 @@ int main(void) {
             ILI9341_COLOR_WHITE,
             0
         );
-        HAL_Delay(250);
         ILI9341_WriteString(
             &ili9341,
             10,
@@ -155,7 +152,6 @@ int main(void) {
             ILI9341_COLOR_WHITE,
             0
         );
-        HAL_Delay(250);
         ILI9341_WriteString(
             &ili9341,
             10,
@@ -166,7 +162,6 @@ int main(void) {
             ILI9341_COLOR_WHITE,
             0
         );
-        HAL_Delay(250);
         ILI9341_WriteString(
             &ili9341,
             10,
@@ -177,7 +172,6 @@ int main(void) {
             ILI9341_COLOR_WHITE,
             0
         );
-        HAL_Delay(250);
         ILI9341_WriteString(
             &ili9341,
             10,
@@ -188,7 +182,6 @@ int main(void) {
             ILI9341_COLOR_WHITE,
             0
         );
-        HAL_Delay(250);
         ILI9341_WriteString(
             &ili9341,
             10,
@@ -199,7 +192,6 @@ int main(void) {
             ILI9341_COLOR_WHITE,
             2
         );
-        HAL_Delay(250);
         ILI9341_WriteString(
             &ili9341,
             10,
@@ -210,7 +202,6 @@ int main(void) {
             ILI9341_COLOR_WHITE,
             2
         );
-        HAL_Delay(250);
         ILI9341_WriteString(
             &ili9341,
             10,
@@ -248,7 +239,6 @@ int main(void) {
             1,
             0
         );
-        HAL_Delay(250);
         ILI9341_WriteStringScaled(
             &ili9341,
             10,
@@ -260,11 +250,21 @@ int main(void) {
             2,
             0
         );
-        HAL_Delay(250);
         ILI9341_WriteStringScaled(
             &ili9341,
             10,
             90,
+            "Hello, World!",
+            ILI9341_Font_Terminus8x16,
+            ILI9341_COLOR_BLACK,
+            ILI9341_COLOR_WHITE,
+            3,
+            0
+        );
+        ILI9341_WriteStringScaled(
+            &ili9341,
+            40,
+            210,
             "Hello, World!",
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
@@ -303,7 +303,6 @@ int main(void) {
             ILI9341_COLOR_WHITE,
             0
         );
-        HAL_Delay(250);
         ILI9341_WriteStringTransparentScaled(
             &ili9341,
             10,
@@ -314,11 +313,20 @@ int main(void) {
             2,
             0
         );
-        HAL_Delay(250);
         ILI9341_WriteStringTransparentScaled(
             &ili9341,
             10,
             90,
+            "Hello, World!",
+            ILI9341_Font_Terminus8x16,
+            ILI9341_COLOR_WHITE,
+            3,
+            0
+        );
+        ILI9341_WriteStringTransparentScaled(
+            &ili9341,
+            40,
+            210,
             "Hello, World!",
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_WHITE,
@@ -385,7 +393,6 @@ int main(void) {
                 HAL_RNG_GetRandomNumber(&hrng) % (ili9341.height * 2) - ili9341.height / 2,
                 HAL_RNG_GetRandomNumber(&hrng) % 0xFFFF
             );
-            HAL_Delay(50);
         }
         HAL_Delay(250);
         waitForButtonPress();
@@ -414,7 +421,6 @@ int main(void) {
                 1 + (HAL_RNG_GetRandomNumber(&hrng) % 16),
                 HAL_RNG_GetRandomNumber(&hrng) & 1
             );
-            HAL_Delay(50);
         }
         HAL_Delay(250);
         waitForButtonPress();
@@ -441,7 +447,6 @@ int main(void) {
                 50,
                 HAL_RNG_GetRandomNumber(&hrng) % 0xFFFF
             );
-            HAL_Delay(250);
         }
         HAL_Delay(250);
         waitForButtonPress();
@@ -469,7 +474,6 @@ int main(void) {
                 HAL_RNG_GetRandomNumber(&hrng) % 0xFFFF,
                 1 + (HAL_RNG_GetRandomNumber(&hrng) % 16)
             );
-            HAL_Delay(250);
         }
         HAL_Delay(250);
         waitForButtonPress();
@@ -489,7 +493,6 @@ int main(void) {
         waitForButtonPress();
         for (int16_t i = -5; i < 15; i++) {
             ILI9341_DrawCircle(&ili9341, 25 + (i * 15), 55 + (i * 15), 25, HAL_RNG_GetRandomNumber(&hrng) % 0xFFFF);
-            HAL_Delay(250);
         }
         HAL_Delay(250);
         waitForButtonPress();
@@ -516,7 +519,6 @@ int main(void) {
                 HAL_RNG_GetRandomNumber(&hrng) % 0xFFFF,
                 1 + (HAL_RNG_GetRandomNumber(&hrng) % 16)
             );
-            HAL_Delay(250);
         }
         HAL_Delay(250);
         waitForButtonPress();
@@ -535,8 +537,86 @@ int main(void) {
         HAL_Delay(250);
         waitForButtonPress();
         for (int16_t i = -5; i < 10; i++) {
-            ILI9341_FillCircle(&ili9341, 25 + (i * 20), 55 + (i * 20), 20, HAL_RNG_GetRandomNumber(&hrng) % 0xFFFF);
-            HAL_Delay(250);
+            ILI9341_FillCircle(&ili9341, 25 + (i * 20), 55 + (i * 20), 25, HAL_RNG_GetRandomNumber(&hrng) % 0xFFFF);
+        }
+        HAL_Delay(250);
+        waitForButtonPress();
+
+        ILI9341_FillScreen(&ili9341, ILI9341_COLOR_WHITE);
+        ILI9341_WriteString(
+            &ili9341,
+            5,
+            5,
+            "Draw ellipse test",
+            ILI9341_Font_Terminus8x16,
+            ILI9341_COLOR_BLACK,
+            ILI9341_COLOR_WHITE,
+            0
+        );
+        HAL_Delay(250);
+        waitForButtonPress();
+        for (int16_t i = -5; i < 15; i++) {
+            ILI9341_DrawEllipse(
+                &ili9341,
+                25 + (i * 15),
+                55 + (i * 15),
+                20,
+                10 + (i * 5),
+                HAL_RNG_GetRandomNumber(&hrng) % 0xFFFF
+            );
+        }
+        HAL_Delay(250);
+        waitForButtonPress();
+
+        ILI9341_FillScreen(&ili9341, ILI9341_COLOR_WHITE);
+        ILI9341_WriteString(
+            &ili9341,
+            5,
+            5,
+            "Draw ellipse thick test",
+            ILI9341_Font_Terminus8x16,
+            ILI9341_COLOR_BLACK,
+            ILI9341_COLOR_WHITE,
+            0
+        );
+        HAL_Delay(250);
+        waitForButtonPress();
+        for (int16_t i = -5; i < 15; i++) {
+            ILI9341_DrawEllipseThick(
+                &ili9341,
+                25 + (i * 15),
+                55 + (i * 15),
+                20,
+                10 + (i * 5),
+                HAL_RNG_GetRandomNumber(&hrng) % 0xFFFF,
+                1 + (HAL_RNG_GetRandomNumber(&hrng) % 16)
+            );
+        }
+        HAL_Delay(250);
+        waitForButtonPress();
+
+        ILI9341_FillScreen(&ili9341, ILI9341_COLOR_WHITE);
+        ILI9341_WriteString(
+            &ili9341,
+            5,
+            5,
+            "Fill ellipse test",
+            ILI9341_Font_Terminus8x16,
+            ILI9341_COLOR_BLACK,
+            ILI9341_COLOR_WHITE,
+            0
+        );
+        HAL_Delay(250);
+        waitForButtonPress();
+        for (int16_t i = -5; i < 10; i++) {
+            ILI9341_FillEllipse(
+                &ili9341,
+                25 + (i * 20),
+                55 + (i * 20),
+                20,
+                10 + (i * 5),
+                HAL_RNG_GetRandomNumber(&hrng) % 0xFFFF
+            );
         }
         HAL_Delay(250);
         waitForButtonPress();
@@ -563,7 +643,6 @@ int main(void) {
                 ys[j] = HAL_RNG_GetRandomNumber(&hrng) % ili9341.height;
             }
             ILI9341_DrawPolygon(&ili9341, xs, ys, sides, HAL_RNG_GetRandomNumber(&hrng) % 0xFFFF);
-            HAL_Delay(250);
         }
         HAL_Delay(250);
         waitForButtonPress();
@@ -598,7 +677,6 @@ int main(void) {
                 1 + (HAL_RNG_GetRandomNumber(&hrng) % 16),
                 HAL_RNG_GetRandomNumber(&hrng) & 1
             );
-            HAL_Delay(250);
         }
         HAL_Delay(250);
         waitForButtonPress();
@@ -625,7 +703,6 @@ int main(void) {
                 ys[j] = HAL_RNG_GetRandomNumber(&hrng) % ili9341.height;
             }
             ILI9341_FillPolygon(&ili9341, xs, ys, sides, HAL_RNG_GetRandomNumber(&hrng) % 0xFFFF);
-            HAL_Delay(250);
         }
         HAL_Delay(250);
         waitForButtonPress();
@@ -651,7 +728,6 @@ int main(void) {
                     ILI9341_FillCircle(&ili9341, x, y, 3, ILI9341_COLOR_RED);
                 }
             }
-            HAL_Delay(10);
         }
 
         ILI9341_SetOrientation(&ili9341, ILI9341_ROTATION_VERTICAL_2);
@@ -675,7 +751,6 @@ int main(void) {
                     ILI9341_FillCircle(&ili9341, x, y, 3, ILI9341_COLOR_RED);
                 }
             }
-            HAL_Delay(10);
         }
 
         ILI9341_SetOrientation(&ili9341, ILI9341_ROTATION_HORIZONTAL_1);
@@ -699,7 +774,6 @@ int main(void) {
                     ILI9341_FillCircle(&ili9341, x, y, 3, ILI9341_COLOR_RED);
                 }
             }
-            HAL_Delay(10);
         }
         ILI9341_SetOrientation(&ili9341, ILI9341_ROTATION_HORIZONTAL_2);
         ILI9341_Touch_SetOrientation(&ili9341_touch, ILI9341_ROTATION_HORIZONTAL_2);
@@ -722,7 +796,6 @@ int main(void) {
                     ILI9341_FillCircle(&ili9341, x, y, 3, ILI9341_COLOR_RED);
                 }
             }
-            HAL_Delay(10);
         }
         ILI9341_SetOrientation(&ili9341, ILI9341_ROTATION_HORIZONTAL_1);
         ILI9341_Touch_SetOrientation(&ili9341_touch, ILI9341_ROTATION_HORIZONTAL_1);

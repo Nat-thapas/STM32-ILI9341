@@ -52,39 +52,6 @@ static void ILI9341_WriteData(ILI9341_HandleTypeDef* ili9341, uint8_t* buff, siz
     }
 }
 
-/**
- * @brief Set the address window for subsequent pixel data
- * @param ili9341 Pointer to ILI9341 handle structure
- * @param x0 X coordinate of the top-left corner of the window
- * @param y0 Y coordinate of the top-left corner of the window
- * @param x1 X coordinate of the bottom-right corner of the window
- * @param y1 Y coordinate of the bottom-right corner of the window
- */
-static void ILI9341_SetAddressWindow(
-    ILI9341_HandleTypeDef* ili9341,
-    uint16_t x0,
-    uint16_t y0,
-    uint16_t x1,
-    uint16_t y1
-) {
-    // column address set
-    ILI9341_WriteCommand(ili9341, 0x2A);  // CASET
-    {
-        uint8_t data[] = {(x0 >> 8) & 0xFF, x0 & 0xFF, (x1 >> 8) & 0xFF, x1 & 0xFF};
-        ILI9341_WriteData(ili9341, data, sizeof(data));
-    }
-
-    // row address set
-    ILI9341_WriteCommand(ili9341, 0x2B);  // RASET
-    {
-        uint8_t data[] = {(y0 >> 8) & 0xFF, y0 & 0xFF, (y1 >> 8) & 0xFF, y1 & 0xFF};
-        ILI9341_WriteData(ili9341, data, sizeof(data));
-    }
-
-    // write to RAM
-    ILI9341_WriteCommand(ili9341, 0x2C);  // RAMWR
-}
-
 ILI9341_HandleTypeDef ILI9341_Init(
     SPI_HandleTypeDef* spi_handle,
     GPIO_TypeDef* cs_port,
@@ -380,6 +347,39 @@ void ILI9341_SetBrightness(ILI9341_HandleTypeDef* ili9341, uint_fast8_t brightne
     }
 
     ILI9341_Deselect(ili9341);
+}
+
+/**
+ * @brief Set the address window for subsequent pixel data
+ * @param ili9341 Pointer to ILI9341 handle structure
+ * @param x0 X coordinate of the top-left corner of the window
+ * @param y0 Y coordinate of the top-left corner of the window
+ * @param x1 X coordinate of the bottom-right corner of the window
+ * @param y1 Y coordinate of the bottom-right corner of the window
+ */
+static void ILI9341_SetAddressWindow(
+    ILI9341_HandleTypeDef* ili9341,
+    uint16_t x0,
+    uint16_t y0,
+    uint16_t x1,
+    uint16_t y1
+) {
+    // column address set
+    ILI9341_WriteCommand(ili9341, 0x2A);  // CASET
+    {
+        uint8_t data[] = {(x0 >> 8) & 0xFF, x0 & 0xFF, (x1 >> 8) & 0xFF, x1 & 0xFF};
+        ILI9341_WriteData(ili9341, data, sizeof(data));
+    }
+
+    // row address set
+    ILI9341_WriteCommand(ili9341, 0x2B);  // RASET
+    {
+        uint8_t data[] = {(y0 >> 8) & 0xFF, y0 & 0xFF, (y1 >> 8) & 0xFF, y1 & 0xFF};
+        ILI9341_WriteData(ili9341, data, sizeof(data));
+    }
+
+    // write to RAM
+    ILI9341_WriteCommand(ili9341, 0x2C);  // RAMWR
 }
 
 /**
@@ -1172,7 +1172,6 @@ void ILI9341_DrawEllipseThick(
     }
 
     int_fast16_t x = rx;
-    int_fast16_t y = 0;
     int_fast16_t rxi = rx - thickness;
     int_fast16_t ryi = ry - thickness;
     int_fast16_t xi = rxi;

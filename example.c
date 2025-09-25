@@ -336,22 +336,22 @@ int main(void) {
         HAL_Delay(250);
         waitForButtonPress();
 
-        ILI9341_FillScreen(&ili9341, ILI9341_COLOR_WHITE);
-        ILI9341_WriteString(
-            &ili9341,
-            5,
-            5,
-            "Draw image test",
-            ILI9341_Font_Terminus8x16,
-            ILI9341_COLOR_BLACK,
-            ILI9341_COLOR_WHITE,
-            0
-        );
-        HAL_Delay(250);
-        waitForButtonPress();
-        ILI9341_DrawImage(&ili9341, 20, 25, 280, 210, image_data);
-        HAL_Delay(250);
-        waitForButtonPress();
+        // ILI9341_FillScreen(&ili9341, ILI9341_COLOR_WHITE);
+        // ILI9341_WriteString(
+        //     &ili9341,
+        //     5,
+        //     5,
+        //     "Draw image test",
+        //     ILI9341_Font_Terminus8x16,
+        //     ILI9341_COLOR_BLACK,
+        //     ILI9341_COLOR_WHITE,
+        //     0
+        // );
+        // HAL_Delay(250);
+        // waitForButtonPress();
+        // ILI9341_DrawImage(&ili9341, 20, 25, 280, 210, image_data);
+        // HAL_Delay(250);
+        // waitForButtonPress();
 
         ILI9341_WriteString(
             &ili9341,

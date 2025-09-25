@@ -485,8 +485,8 @@ void ILI9341_FillScreen(ILI9341_HandleTypeDef* ili9341, uint16_t color) {
 /**
  * @brief Write a character at specified coordinates without selecting/deselecting the display
  * @param ili9341 Pointer to ILI9341 handle structure
- * @param x X coordinate of the top-left of the character
- * @param y Y coordinate of the top-left of the character
+ * @param x X coordinate of the left of the character
+ * @param y Y coordinate of the baseline of the character
  * @param ch ASCII character to write
  * @param font Font definition to use for rendering the character
  * @param color 16-bit character color in RGB565 format
@@ -496,22 +496,21 @@ static void ILI9341_WriteChar(
     ILI9341_HandleTypeDef* ili9341,
     int_fast16_t x,
     int_fast16_t y,
-    char ch,
-    ILI9341_FontDef font,
+    ILI9341_GlyphDef glyph,
     uint16_t color,
     uint16_t bgColor
 ) {
-    int_fast16_t endX = x + font.width - 1;
-    int_fast16_t endY = y + font.height - 1;
+    int_fast16_t startX = x + glyph.bbX;
+    int_fast16_t startY = y - glyph.bbY - glyph.bbH + 1;
+    int_fast16_t endX = startX + glyph.bbW - 1;
+    int_fast16_t endY = startY + glyph.bbH - 1;
 
-    if (endX < 0 || endY < 0 || x >= ili9341->width || y >= ili9341->height) return;
+    if (endX < 0 || endY < 0 || startX >= ili9341->width || startY >= ili9341->height) return;
 
-    int_fast16_t clipStartX = x < 0 ? -x : 0;
-    int_fast16_t clipStartY = y < 0 ? -y : 0;
-    int_fast16_t clipEndX = endX >= ili9341->width ? ili9341->width - x - 1 : font.width - 1;
-    int_fast16_t clipEndY = endY >= ili9341->height ? ili9341->height - y - 1 : font.height - 1;
-
-    if (ch < 32 || ch > 126) ch = 32;
+    int_fast16_t clipStartX = startX < 0 ? -startX : 0;
+    int_fast16_t clipStartY = startY < 0 ? -startY : 0;
+    int_fast16_t clipEndX = endX >= ili9341->width ? ili9341->width - startX - 1 : glyph.bbW - 1;
+    int_fast16_t clipEndY = endY >= ili9341->height ? ili9341->height - startY - 1 : glyph.bbH - 1;
 
     color = (color >> 8) | (color << 8);
     bgColor = (bgColor >> 8) | (bgColor << 8);
@@ -519,15 +518,15 @@ static void ILI9341_WriteChar(
     uint16_t buffer[ILI9341_WRITE_CHAR_BUFFER_SIZE];
     size_t bufferIndex = 0;
 
-    int_fast16_t index = (ch - 32) * font.intsPerGlyph;
-    uint32_t mask = 0x80000000;
+    int_fast16_t index = 0;
+    uint8_t mask = 0x80;
 
-    ILI9341_SetAddressWindow(ili9341, x + clipStartX, y + clipStartY, x + clipEndX, y + clipEndY);
+    ILI9341_SetAddressWindow(ili9341, startX + clipStartX, startY + clipStartY, startX + clipEndX, startY + clipEndY);
 
-    for (int_fast16_t row = 0; row < font.height; row++) {
-        for (int_fast16_t col = 0; col < font.width; col++) {
+    for (int_fast16_t row = 0; row < glyph.bbH; row++) {
+        for (int_fast16_t col = 0; col < glyph.bbW; col++) {
             if (row >= clipStartY && row <= clipEndY && col >= clipStartX && col <= clipEndX) {
-                if (font.data[index] & mask) {
+                if (glyph.data[index] & mask) {
                     buffer[bufferIndex++] = color;
                 } else {
                     buffer[bufferIndex++] = bgColor;
@@ -542,7 +541,7 @@ static void ILI9341_WriteChar(
             mask >>= 1;
             if (mask == 0) {
                 index++;
-                mask = 0x80000000;
+                mask = 0x80;
             }
         }
     }
@@ -560,13 +559,14 @@ void ILI9341_WriteString(
     uint16_t bgColor,
     int_fast16_t tracking
 ) {
-    if (y >= ili9341->height) return;
-
     ILI9341_Select(ili9341);
 
-    while (*str && x < ili9341->width) {
-        ILI9341_WriteChar(ili9341, x, y, *str, font, color, bgColor);
-        x += font.width + tracking;
+    while (*str) {
+        char c = *str;
+        if (c < font.startCodepoint || c > font.endCodepoint) c = ' ';
+        ILI9341_GlyphDef glyph = font.glyphs[c - font.startCodepoint];
+        ILI9341_WriteChar(ili9341, x, y, glyph, color, bgColor);
+        x += glyph.advance + tracking;
         str++;
     }
 
@@ -576,8 +576,8 @@ void ILI9341_WriteString(
 /**
  * @brief Write a scaled character at specified coordinates without selecting/deselecting the display
  * @param ili9341 Pointer to ILI9341 handle structure
- * @param x X coordinate of the top-left of the character
- * @param y Y coordinate of the top-left of the character
+ * @param x X coordinate of the left of the character
+ * @param y Y coordinate of the baseline of the character
  * @param ch ASCII character to write
  * @param font Font definition to use for rendering the character
  * @param color 16-bit character color in RGB565 format
@@ -588,23 +588,22 @@ static void ILI9341_WriteCharScaled(
     ILI9341_HandleTypeDef* ili9341,
     int_fast16_t x,
     int_fast16_t y,
-    char ch,
-    ILI9341_FontDef font,
+    ILI9341_GlyphDef glyph,
     uint16_t color,
     uint16_t bgColor,
     int_fast16_t scale
 ) {
-    int_fast16_t endX = x + font.width * scale - 1;
-    int_fast16_t endY = y + font.height * scale - 1;
+    int_fast16_t startX = x + glyph.bbX * scale;
+    int_fast16_t startY = y - glyph.bbY * scale - glyph.bbH * scale + 1;
+    int_fast16_t endX = startX + glyph.bbW * scale - 1;
+    int_fast16_t endY = startY + glyph.bbH * scale - 1;
 
-    if (endX < 0 || endY < 0 || x >= ili9341->width || y >= ili9341->height) return;
+    if (endX < 0 || endY < 0 || startX >= ili9341->width || startY >= ili9341->height) return;
 
-    int_fast16_t clipStartX = x < 0 ? -x : 0;
-    int_fast16_t clipStartY = y < 0 ? -y : 0;
-    int_fast16_t clipEndX = endX >= ili9341->width ? ili9341->width - x - 1 : font.width * scale - 1;
-    int_fast16_t clipEndY = endY >= ili9341->height ? ili9341->height - y - 1 : font.height * scale - 1;
-
-    if (ch < 32 || ch > 126) ch = 32;
+    int_fast16_t clipStartX = startX < 0 ? -startX : 0;
+    int_fast16_t clipStartY = startY < 0 ? -startY : 0;
+    int_fast16_t clipEndX = endX >= ili9341->width ? ili9341->width - startX - 1 : glyph.bbW * scale - 1;
+    int_fast16_t clipEndY = endY >= ili9341->height ? ili9341->height - startY - 1 : glyph.bbH * scale - 1;
 
     color = (color >> 8) | (color << 8);
     bgColor = (bgColor >> 8) | (bgColor << 8);
@@ -612,21 +611,21 @@ static void ILI9341_WriteCharScaled(
     uint16_t buffer[ILI9341_WRITE_CHAR_BUFFER_SIZE];
     size_t bufferIndex = 0;
 
-    int_fast32_t bitIndex = (ch - 32) * font.intsPerGlyph * 32;
+    int_fast32_t bitIndex = 0;
 
-    ILI9341_SetAddressWindow(ili9341, x + clipStartX, y + clipStartY, x + clipEndX, y + clipEndY);
+    ILI9341_SetAddressWindow(ili9341, startX + clipStartX, startY + clipStartY, startX + clipEndX, startY + clipEndY);
 
-    for (int_fast16_t row = 0; row < font.height; row++) {
+    for (int_fast16_t row = 0; row < glyph.bbH; row++) {
         for (int_fast16_t vScale = 0; vScale < scale; vScale++) {
             int_fast16_t pixelRow = row * scale + vScale;
-            for (int_fast16_t col = 0; col < font.width; col++) {
-                uint32_t mask = 0x80000000 >> (bitIndex % 32);
-                int_fast16_t index = bitIndex / 32;
+            for (int_fast16_t col = 0; col < glyph.bbW; col++) {
+                uint8_t mask = 0x80 >> (bitIndex % 8);
+                int_fast16_t index = bitIndex / 8;
                 for (int_fast16_t hScale = 0; hScale < scale; hScale++) {
                     int_fast16_t pixelCol = col * scale + hScale;
                     if (pixelRow >= clipStartY && pixelRow <= clipEndY && pixelCol >= clipStartX &&
                         pixelCol <= clipEndX) {
-                        if (font.data[index] & mask) {
+                        if (glyph.data[index] & mask) {
                             buffer[bufferIndex++] = color;
                         } else {
                             buffer[bufferIndex++] = bgColor;
@@ -640,9 +639,9 @@ static void ILI9341_WriteCharScaled(
                 }
                 bitIndex++;
             }
-            bitIndex -= font.width;
+            bitIndex -= glyph.bbW;
         }
-        bitIndex += font.width;
+        bitIndex += glyph.bbW;
     }
 
     if (bufferIndex > 0) ILI9341_WriteData(ili9341, (uint8_t*)buffer, bufferIndex * 2);
@@ -659,14 +658,16 @@ void ILI9341_WriteStringScaled(
     int_fast16_t scale,
     int_fast16_t tracking
 ) {
-    if (y >= ili9341->height) return;
     scale = abs(scale);
 
     ILI9341_Select(ili9341);
 
-    while (*str && x < ili9341->width) {
-        ILI9341_WriteCharScaled(ili9341, x, y, *str, font, color, bgColor, scale);
-        x += font.width * scale + tracking;
+    while (*str) {
+        char c = *str;
+        if (c < font.startCodepoint || c > font.endCodepoint) c = ' ';
+        ILI9341_GlyphDef glyph = font.glyphs[c - font.startCodepoint];
+        ILI9341_WriteCharScaled(ili9341, x, y, glyph, color, bgColor, scale);
+        x += glyph.advance * scale + tracking;
         str++;
     }
 
@@ -677,8 +678,8 @@ void ILI9341_WriteStringScaled(
  * @brief Write a character with transparent background at specified coordinates without selecting/deselecting the
  * display
  * @param ili9341 Pointer to ILI9341 handle structure
- * @param x X coordinate of the top-left of the character
- * @param y Y coordinate of the top-left of the character
+ * @param x X coordinate of the left of the character
+ * @param y Y coordinate of the baseline of the character
  * @param ch ASCII character to write
  * @param font Font definition to use for rendering the character
  * @param color 16-bit character color in RGB565 format
@@ -687,22 +688,22 @@ static void ILI9341_WriteCharTransparent(
     ILI9341_HandleTypeDef* ili9341,
     int_fast16_t x,
     int_fast16_t y,
-    char ch,
-    ILI9341_FontDef font,
+    ILI9341_GlyphDef glyph,
     uint16_t color
 ) {
-    if (ch < 32 || ch > 126) ch = 32;
+    int_fast16_t startX = x + glyph.bbX;
+    int_fast16_t startY = y - glyph.bbY - glyph.bbH + 1;
 
-    int_fast16_t index = (ch - 32) * font.intsPerGlyph;
-    uint32_t mask = 0x80000000;
+    int_fast16_t index = 0;
+    uint8_t mask = 0x80;
 
-    for (int_fast16_t row = 0; row < font.height; row++) {
-        for (int_fast16_t col = 0; col < font.width; col++) {
-            if (font.data[index] & mask) { ILI9341_DrawPixelFast(ili9341, x + col, y + row, color); }
+    for (int_fast16_t row = 0; row < glyph.bbH; row++) {
+        for (int_fast16_t col = 0; col < glyph.bbW; col++) {
+            if (glyph.data[index] & mask) { ILI9341_DrawPixelFast(ili9341, startX + col, startY + row, color); }
             mask >>= 1;
             if (mask == 0) {
                 index++;
-                mask = 0x80000000;
+                mask = 0x80;
             }
         }
     }
@@ -717,13 +718,14 @@ void ILI9341_WriteStringTransparent(
     uint16_t color,
     int_fast16_t tracking
 ) {
-    if (y >= ili9341->height) return;
-
     ILI9341_Select(ili9341);
 
-    while (*str && x < ili9341->width) {
-        ILI9341_WriteCharTransparent(ili9341, x, y, *str, font, color);
-        x += font.width + tracking;
+    while (*str) {
+        char c = *str;
+        if (c < font.startCodepoint || c > font.endCodepoint) c = ' ';
+        ILI9341_GlyphDef glyph = font.glyphs[c - font.startCodepoint];
+        ILI9341_WriteCharTransparent(ili9341, x, y, glyph, color);
+        x += glyph.advance + tracking;
         str++;
     }
 
@@ -734,8 +736,8 @@ void ILI9341_WriteStringTransparent(
  * @brief Write a scaled character with transparent background at specified coordinates without selecting/deselecting
  * the display
  * @param ili9341 Pointer to ILI9341 handle structure
- * @param x X coordinate of the top-left of the character
- * @param y Y coordinate of the top-left of the character
+ * @param x X coordinate of the left of the character
+ * @param y Y coordinate of the baseline of the character
  * @param ch ASCII character to write
  * @param font Font definition to use for rendering the character
  * @param color 16-bit character color in RGB565 format
@@ -745,25 +747,25 @@ static void ILI9341_WriteCharTransparentScaled(
     ILI9341_HandleTypeDef* ili9341,
     int_fast16_t x,
     int_fast16_t y,
-    char ch,
-    ILI9341_FontDef font,
+    ILI9341_GlyphDef glyph,
     uint16_t color,
     int_fast16_t scale
 ) {
-    if (ch < 32 || ch > 126) ch = 32;
+    int_fast16_t startX = x + glyph.bbX * scale;
+    int_fast16_t startY = y - glyph.bbY * scale - glyph.bbH * scale + 1;
 
-    int_fast16_t index = (ch - 32) * font.intsPerGlyph;
-    uint32_t mask = 0x80000000;
+    int_fast16_t index = 0;
+    uint8_t mask = 0x80;
 
-    for (int_fast16_t row = 0; row < font.height; row++) {
-        for (int_fast16_t col = 0; col < font.width; col++) {
-            if (font.data[index] & mask) {
-                ILI9341_FillRectangleFast(ili9341, x + col * scale, y + row * scale, scale, scale, color);
+    for (int_fast16_t row = 0; row < glyph.bbH; row++) {
+        for (int_fast16_t col = 0; col < glyph.bbW; col++) {
+            if (glyph.data[index] & mask) {
+                ILI9341_FillRectangleFast(ili9341, startX + col * scale, startY + row * scale, scale, scale, color);
             }
             mask >>= 1;
             if (mask == 0) {
                 index++;
-                mask = 0x80000000;
+                mask = 0x80;
             }
         }
     }
@@ -779,14 +781,16 @@ void ILI9341_WriteStringTransparentScaled(
     int_fast16_t scale,
     int_fast16_t tracking
 ) {
-    if (y >= ili9341->height) return;
     scale = abs(scale);
 
     ILI9341_Select(ili9341);
 
-    while (*str && x < ili9341->width) {
-        ILI9341_WriteCharTransparentScaled(ili9341, x, y, *str, font, color, scale);
-        x += font.width * scale + tracking;
+    while (*str) {
+        char c = *str;
+        if (c < font.startCodepoint || c > font.endCodepoint) c = ' ';
+        ILI9341_GlyphDef glyph = font.glyphs[c - font.startCodepoint];
+        ILI9341_WriteCharTransparentScaled(ili9341, x, y, glyph, color, scale);
+        x += glyph.advance * scale + tracking;
         str++;
     }
 

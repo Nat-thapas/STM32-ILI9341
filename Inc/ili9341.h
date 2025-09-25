@@ -146,8 +146,8 @@ void ILI9341_FillScreen(ILI9341_HandleTypeDef* ili9341, uint16_t color);
 /**
  * @brief Write a string to the display with specified font and colors
  * @param ili9341 Pointer to ILI9341 handle structure
- * @param x X coordinate of the top-left corner of the string
- * @param y Y coordinate of the top-left corner of the string
+ * @param x X coordinate of the left corner of the string
+ * @param y Y coordinate of the baseline corner of the string
  * @param str Null-terminated string to write
  * @param font Font definition to use for rendering the string
  * @param color 16-bit text color in RGB565 format
@@ -168,8 +168,8 @@ void ILI9341_WriteString(
 /**
  * @brief Write a scaled string to the display with specified font and colors
  * @param ili9341 Pointer to ILI9341 handle structure
- * @param x X coordinate of the top-left corner of the string
- * @param y Y coordinate of the top-left corner of the string
+ * @param x X coordinate of the left corner of the string
+ * @param y Y coordinate of the baseline corner of the string
  * @param str Null-terminated string to write
  * @param font Font definition to use for rendering the string
  * @param color 16-bit text color in RGB565 format
@@ -193,8 +193,8 @@ void ILI9341_WriteStringScaled(
 /**
  * @brief Write a string to the display with specified font and color, background is not drawn (transparent)
  * @param ili9341 Pointer to ILI9341 handle structure
- * @param x X coordinate of the top-left corner of the string
- * @param y Y coordinate of the top-left corner of the string
+ * @param x X coordinate of the left corner of the string
+ * @param y Y coordinate of the baseline corner of the string
  * @param str Null-terminated string to write
  * @param font Font definition to use for rendering the string
  * @param color 16-bit text color in RGB565 format
@@ -213,8 +213,8 @@ void ILI9341_WriteStringTransparent(
 /**
  * @brief Write a scaled string to the display with specified font and color, background is not drawn (transparent)
  * @param ili9341 Pointer to ILI9341 handle structure
- * @param x X coordinate of the top-left corner of the string
- * @param y Y coordinate of the top-left corner of the string
+ * @param x X coordinate of the left corner of the string
+ * @param y Y coordinate of the baseline corner of the string
  * @param str Null-terminated string to write
  * @param font Font definition to use for rendering the string
  * @param color 16-bit text color in RGB565 format

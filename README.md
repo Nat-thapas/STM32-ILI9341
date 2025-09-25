@@ -57,6 +57,20 @@ ILI9341_FillScreen(&ili9341_2, ILI9341_COLOR_WHITE);
 
 More informations and documentations are available in the header files. Examples and functionality tests are available in the [example](./example.c)
 
+## Notes
+
+1. To use Thai font, you'll need to encode strings in the executable using code page ISO-8859-11, to do this you'll need to add the compiler options `-finput-charset=UTF-8 -fexec-charset=ISO-8859-11` which can be accomplished by adding the following lines to CMakeLists.txt
+
+```
+# Allow Thai text to be encoded in a single byte
+target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
+    -finput-charset=UTF-8
+    -fexec-charset=ISO-8859-11
+)
+```
+
+2. To add custom font, use the [export_font.py](./export_font.py) script (place it in a folder along with .bdf files and run it), this is not a "production-ready" script and may require modifications to use with some fonts. After you generate the font data file with the script, rename it appropiately and add it to the Src folder, then add the font declarations to the [header file](./Inc/ili9341_fonts.h)
+
 ### Original license for [afiskon/stm32-ili9341][u0] (upstream of this fork)
 
 ```

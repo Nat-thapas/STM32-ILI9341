@@ -31,7 +31,7 @@ typedef struct {
  * @brief Deselect the ILI9341 touch controller, call before using other peripherals on the same SPI bus
  * @param ili9341_touch Pointer to the ILI9341_Touch_HandleTypeDef structure
  */
-void ILI9341_Touch_Deselect(ILI9341_Touch_HandleTypeDef* ili9341_touch);
+void ILI9341_Touch_Deselect(const ILI9341_Touch_HandleTypeDef* ili9341_touch);
 
 /**
  * @brief Initialize the touch controller
@@ -45,7 +45,7 @@ void ILI9341_Touch_Deselect(ILI9341_Touch_HandleTypeDef* ili9341_touch);
  * @param height Display height in pixels
  * @return Initialized ILI9341_Touch_HandleTypeDef structure
  */
-ILI9341_Touch_HandleTypeDef ILI9341_Touch_Init(
+const ILI9341_Touch_HandleTypeDef ILI9341_Touch_Init(
     SPI_HandleTypeDef* spi_handle,
     GPIO_TypeDef* cs_port,
     uint16_t cs_pin,
@@ -67,7 +67,7 @@ void ILI9341_Touch_SetOrientation(ILI9341_Touch_HandleTypeDef* ili9341_touch, in
  * @brief Check if the touchscreen is currently pressed
  * @param ili9341_touch Pointer to the ILI9341_Touch_HandleTypeDef structure
  */
-bool ILI9341_Touch_IsPressed(ILI9341_Touch_HandleTypeDef* ili9341_touch);
+bool ILI9341_Touch_IsPressed(const ILI9341_Touch_HandleTypeDef* ili9341_touch);
 
 /**
  * @brief Get the current touch coordinates
@@ -76,6 +76,6 @@ bool ILI9341_Touch_IsPressed(ILI9341_Touch_HandleTypeDef* ili9341_touch);
  * @param y Pointer to store the Y coordinate
  * @return true if coordinates were successfully read, false otherwise
  */
-bool ILI9341_Touch_GetCoordinates(ILI9341_Touch_HandleTypeDef* ili9341_touch, uint16_t* x, uint16_t* y);
+bool ILI9341_Touch_GetCoordinates(const ILI9341_Touch_HandleTypeDef* ili9341_touch, uint16_t* x, uint16_t* y);
 
 #endif  // __ILI9341_TOUCH_H__

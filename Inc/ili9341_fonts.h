@@ -43,36 +43,36 @@ typedef struct {
     const ILI9341_GlyphDef* glyphs;
 } ILI9341_FontDef;
 
-extern ILI9341_FontDef ILI9341_Font_Terminus6x12b;
-extern ILI9341_FontDef ILI9341_Font_Terminus6x12;
-extern ILI9341_FontDef ILI9341_Font_Terminus8x14b;
-extern ILI9341_FontDef ILI9341_Font_Terminus8x14;
-extern ILI9341_FontDef ILI9341_Font_Terminus8x14v;
-extern ILI9341_FontDef ILI9341_Font_Terminus8x16b;
-extern ILI9341_FontDef ILI9341_Font_Terminus8x16;
-extern ILI9341_FontDef ILI9341_Font_Terminus8x16v;
-extern ILI9341_FontDef ILI9341_Font_Terminus10x18b;
-extern ILI9341_FontDef ILI9341_Font_Terminus10x18;
-extern ILI9341_FontDef ILI9341_Font_Terminus10x20b;
-extern ILI9341_FontDef ILI9341_Font_Terminus10x20;
-extern ILI9341_FontDef ILI9341_Font_Terminus11x22b;
-extern ILI9341_FontDef ILI9341_Font_Terminus11x22;
-extern ILI9341_FontDef ILI9341_Font_Terminus12x24b;
-extern ILI9341_FontDef ILI9341_Font_Terminus12x24;
-extern ILI9341_FontDef ILI9341_Font_Terminus14x28b;
-extern ILI9341_FontDef ILI9341_Font_Terminus14x28;
-extern ILI9341_FontDef ILI9341_Font_Terminus16x32b;
-extern ILI9341_FontDef ILI9341_Font_Terminus16x32;
+extern const ILI9341_FontDef ILI9341_Font_Terminus6x12b;
+extern const ILI9341_FontDef ILI9341_Font_Terminus6x12;
+extern const ILI9341_FontDef ILI9341_Font_Terminus8x14b;
+extern const ILI9341_FontDef ILI9341_Font_Terminus8x14;
+extern const ILI9341_FontDef ILI9341_Font_Terminus8x14v;
+extern const ILI9341_FontDef ILI9341_Font_Terminus8x16b;
+extern const ILI9341_FontDef ILI9341_Font_Terminus8x16;
+extern const ILI9341_FontDef ILI9341_Font_Terminus8x16v;
+extern const ILI9341_FontDef ILI9341_Font_Terminus10x18b;
+extern const ILI9341_FontDef ILI9341_Font_Terminus10x18;
+extern const ILI9341_FontDef ILI9341_Font_Terminus10x20b;
+extern const ILI9341_FontDef ILI9341_Font_Terminus10x20;
+extern const ILI9341_FontDef ILI9341_Font_Terminus11x22b;
+extern const ILI9341_FontDef ILI9341_Font_Terminus11x22;
+extern const ILI9341_FontDef ILI9341_Font_Terminus12x24b;
+extern const ILI9341_FontDef ILI9341_Font_Terminus12x24;
+extern const ILI9341_FontDef ILI9341_Font_Terminus14x28b;
+extern const ILI9341_FontDef ILI9341_Font_Terminus14x28;
+extern const ILI9341_FontDef ILI9341_Font_Terminus16x32b;
+extern const ILI9341_FontDef ILI9341_Font_Terminus16x32;
 
-extern ILI9341_FontDef ILI9341_Font_Spleen5x8;
-extern ILI9341_FontDef ILI9341_Font_Spleen6x12;
-extern ILI9341_FontDef ILI9341_Font_Spleen8x16;
-extern ILI9341_FontDef ILI9341_Font_Spleen12x24;
-extern ILI9341_FontDef ILI9341_Font_Spleen16x32;
-extern ILI9341_FontDef ILI9341_Font_Spleen32x64;
+extern const ILI9341_FontDef ILI9341_Font_Spleen5x8;
+extern const ILI9341_FontDef ILI9341_Font_Spleen6x12;
+extern const ILI9341_FontDef ILI9341_Font_Spleen8x16;
+extern const ILI9341_FontDef ILI9341_Font_Spleen12x24;
+extern const ILI9341_FontDef ILI9341_Font_Spleen16x32;
+extern const ILI9341_FontDef ILI9341_Font_Spleen32x64;
 
-extern ILI9341_FontDef ILI9341_Font_Manop6x14;
-extern ILI9341_FontDef ILI9341_Font_Manop7x18;
-extern ILI9341_FontDef ILI9341_Font_Manop8x20;
+extern const ILI9341_FontDef ILI9341_Font_Manop6x14;
+extern const ILI9341_FontDef ILI9341_Font_Manop7x18;
+extern const ILI9341_FontDef ILI9341_Font_Manop8x20;
 
 #endif  // __ILI9341_FONTS_H__

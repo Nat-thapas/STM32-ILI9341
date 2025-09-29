@@ -43,7 +43,8 @@
 
 // Other constants
 #define ILI9341_FILL_RECT_BUFFER_SIZE 512   // pixels x 2 bytes per pixel = 1024 bytes
-#define ILI9341_WRITE_CHAR_BUFFER_SIZE 512  // pixels x 2 bytes per pixel = 1024 bytes
+#define ILI9341_DRAW_GLYPH_BUFFER_SIZE 512  // pixels x 2 bytes per pixel = 1024 bytes
+#define FALLBACK_CODEPOINT 0x7F
 
 /**
  * @brief ILI9341 handle structure
@@ -65,7 +66,7 @@ typedef struct {
  * @brief Deselect the ILI9341 display, call before using other SPI peripherals on the same bus
  * @param ili9341 Pointer to ILI9341 handle structure
  */
-void ILI9341_Deselect(ILI9341_HandleTypeDef* ili9341);
+void ILI9341_Deselect(const ILI9341_HandleTypeDef* ili9341);
 
 /**
  * @brief Initialize the ILI9341 display
@@ -107,7 +108,14 @@ void ILI9341_SetOrientation(ILI9341_HandleTypeDef* ili9341, int_fast8_t rotation
  * @param ili9341 Pointer to ILI9341 handle structure
  * @param brightness Brightness level from 0 (min) to 255 (max)
  */
-void ILI9341_SetBrightness(ILI9341_HandleTypeDef* ili9341, uint_fast8_t brightness);
+void ILI9341_SetBrightness(const ILI9341_HandleTypeDef* ili9341, uint_fast8_t brightness);
+
+/**
+ * @brief Invert the display colors
+ * @param ili9341 Pointer to ILI9341 handle structure
+ * @param invert true to invert colors, false for normal colors
+ */
+void ILI9341_InvertColors(const ILI9341_HandleTypeDef* ili9341, bool invert);
 
 /**
  * @brief Draw a single pixel at specified coordinates
@@ -116,7 +124,7 @@ void ILI9341_SetBrightness(ILI9341_HandleTypeDef* ili9341, uint_fast8_t brightne
  * @param y Y coordinate of the pixel
  * @param color 16-bit color of the pixel in RGB565 format
  */
-void ILI9341_DrawPixel(ILI9341_HandleTypeDef* ili9341, int_fast16_t x, int_fast16_t y, uint16_t color);
+void ILI9341_DrawPixel(const ILI9341_HandleTypeDef* ili9341, int_fast16_t x, int_fast16_t y, uint16_t color);
 
 /**
  * @brief Fill a rectangle with specified color
@@ -128,7 +136,7 @@ void ILI9341_DrawPixel(ILI9341_HandleTypeDef* ili9341, int_fast16_t x, int_fast1
  * @param color 16-bit fill color in RGB565 format
  */
 void ILI9341_FillRectangle(
-    ILI9341_HandleTypeDef* ili9341,
+    const ILI9341_HandleTypeDef* ili9341,
     int_fast16_t x,
     int_fast16_t y,
     int_fast16_t w,
@@ -141,73 +149,36 @@ void ILI9341_FillRectangle(
  * @param ili9341 Pointer to ILI9341 handle structure
  * @param color 16-bit fill color in RGB565 format
  */
-void ILI9341_FillScreen(ILI9341_HandleTypeDef* ili9341, uint16_t color);
+void ILI9341_FillScreen(const ILI9341_HandleTypeDef* ili9341, uint16_t color);
 
 /**
  * @brief Write a string to the display with specified font and colors
  * @param ili9341 Pointer to ILI9341 handle structure
- * @param x X coordinate of the left corner of the string
- * @param y Y coordinate of the baseline corner of the string
+ * @param x X coordinate of the left of the string
+ * @param y Y coordinate of the baseline of the string
  * @param str Null-terminated string to write
  * @param font Font definition to use for rendering the string
  * @param color 16-bit text color in RGB565 format
  * @param bgcolor 16-bit background color in RGB565 format
- * @param tracking Additional space in pixels between characters, can be negative
+ * @param wrap Whether to wrap text to the next line if it exceeds display width
+ * @param scale Integer scaling factor for the font, must be >= 1
+ * @param tracking Additional space in pixels between characters, can be negative (negative tracking should only be used
+ *                 with ILI9341_WriteStringTransparent to avoid background overlap)
+ * @param leading Additional space in pixels between lines when wrapping, can be negative (negative leading should only
+ *                be used with ILI9341_WriteStringTransparent to avoid background overlap)
  */
 void ILI9341_WriteString(
-    ILI9341_HandleTypeDef* ili9341,
+    const ILI9341_HandleTypeDef* ili9341,
     int_fast16_t x,
     int_fast16_t y,
     const char* str,
     ILI9341_FontDef font,
     uint16_t color,
     uint16_t bgcolor,
-    int_fast16_t tracking
-);
-
-/**
- * @brief Write a scaled string to the display with specified font and colors
- * @param ili9341 Pointer to ILI9341 handle structure
- * @param x X coordinate of the left corner of the string
- * @param y Y coordinate of the baseline corner of the string
- * @param str Null-terminated string to write
- * @param font Font definition to use for rendering the string
- * @param color 16-bit text color in RGB565 format
- * @param bgcolor 16-bit background color in RGB565 format
- * @param scale Scaling factor for the font, must be >= 1
- * @param tracking Additional space in pixels between characters, can be negative
- * @note This function does not support clipping, any characters that would go beyond the display width are not drawn.
- */
-void ILI9341_WriteStringScaled(
-    ILI9341_HandleTypeDef* ili9341,
-    int_fast16_t x,
-    int_fast16_t y,
-    const char* str,
-    ILI9341_FontDef font,
-    uint16_t color,
-    uint16_t bgcolor,
+    bool wrap,
     int_fast16_t scale,
-    int_fast16_t tracking
-);
-
-/**
- * @brief Write a string to the display with specified font and color, background is not drawn (transparent)
- * @param ili9341 Pointer to ILI9341 handle structure
- * @param x X coordinate of the left corner of the string
- * @param y Y coordinate of the baseline corner of the string
- * @param str Null-terminated string to write
- * @param font Font definition to use for rendering the string
- * @param color 16-bit text color in RGB565 format
- * @param tracking Additional space in pixels between characters, can be negative
- */
-void ILI9341_WriteStringTransparent(
-    ILI9341_HandleTypeDef* ili9341,
-    int_fast16_t x,
-    int_fast16_t y,
-    const char* str,
-    ILI9341_FontDef font,
-    uint16_t color,
-    int_fast16_t tracking
+    int_fast16_t tracking,
+    int_fast16_t leading
 );
 
 /**
@@ -218,19 +189,22 @@ void ILI9341_WriteStringTransparent(
  * @param str Null-terminated string to write
  * @param font Font definition to use for rendering the string
  * @param color 16-bit text color in RGB565 format
- * @param scale Scaling factor for the font, must be >= 1
+ * @param wrap Whether to wrap text to the next line if it exceeds display width
+ * @param scale Integer scaling factor for the font, must be >= 1
  * @param tracking Additional space in pixels between characters, can be negative
- * @note This function does not support clipping, any characters that would go beyond the display width are not drawn.
+ * @param leading Additional space in pixels between lines when wrapping, can be negative
  */
-void ILI9341_WriteStringTransparentScaled(
-    ILI9341_HandleTypeDef* ili9341,
+void ILI9341_WriteStringTransparent(
+    const ILI9341_HandleTypeDef* ili9341,
     int_fast16_t x,
     int_fast16_t y,
     const char* str,
     ILI9341_FontDef font,
     uint16_t color,
+    bool wrap,
     int_fast16_t scale,
-    int_fast16_t tracking
+    int_fast16_t tracking,
+    int_fast16_t leading
 );
 
 /**
@@ -244,20 +218,13 @@ void ILI9341_WriteStringTransparentScaled(
  * elements
  */
 void ILI9341_DrawImage(
-    ILI9341_HandleTypeDef* ili9341,
+    const ILI9341_HandleTypeDef* ili9341,
     int_fast16_t x,
     int_fast16_t y,
     int_fast16_t w,
     int_fast16_t h,
     const uint16_t* data
 );
-
-/**
- * @brief Invert the display colors
- * @param ili9341 Pointer to ILI9341 handle structure
- * @param invert true to invert colors, false for normal colors
- */
-void ILI9341_InvertColors(ILI9341_HandleTypeDef* ili9341, bool invert);
 
 /**
  * @brief Draw a thin line between two points
@@ -269,7 +236,7 @@ void ILI9341_InvertColors(ILI9341_HandleTypeDef* ili9341, bool invert);
  * @param color 16-bit line color in RGB565 format
  */
 void ILI9341_DrawLine(
-    ILI9341_HandleTypeDef* ili9341,
+    const ILI9341_HandleTypeDef* ili9341,
     int_fast16_t x1,
     int_fast16_t y1,
     int_fast16_t x2,
@@ -289,7 +256,7 @@ void ILI9341_DrawLine(
  * @param cap true to draw rounded line caps, false for no caps
  */
 void ILI9341_DrawLineThick(
-    ILI9341_HandleTypeDef* ili9341,
+    const ILI9341_HandleTypeDef* ili9341,
     int_fast16_t x1,
     int_fast16_t y1,
     int_fast16_t x2,
@@ -309,7 +276,7 @@ void ILI9341_DrawLineThick(
  * @param color 16-bit rectangle color in RGB565 format
  */
 void ILI9341_DrawRectangle(
-    ILI9341_HandleTypeDef* ili9341,
+    const ILI9341_HandleTypeDef* ili9341,
     int_fast16_t x,
     int_fast16_t y,
     int_fast16_t w,
@@ -328,7 +295,7 @@ void ILI9341_DrawRectangle(
  * @param thickness Line thickness in pixels, must be >= 1
  */
 void ILI9341_DrawRectangleThick(
-    ILI9341_HandleTypeDef* ili9341,
+    const ILI9341_HandleTypeDef* ili9341,
     int_fast16_t x,
     int_fast16_t y,
     int_fast16_t w,
@@ -345,7 +312,13 @@ void ILI9341_DrawRectangleThick(
  * @param r Radius of the circle
  * @param color 16-bit circle color in RGB565 format
  */
-void ILI9341_DrawCircle(ILI9341_HandleTypeDef* ili9341, int_fast16_t x, int_fast16_t y, int_fast16_t r, uint16_t color);
+void ILI9341_DrawCircle(
+    const ILI9341_HandleTypeDef* ili9341,
+    int_fast16_t x,
+    int_fast16_t y,
+    int_fast16_t r,
+    uint16_t color
+);
 
 /**
  * @brief Draw a thick circle outline
@@ -357,7 +330,7 @@ void ILI9341_DrawCircle(ILI9341_HandleTypeDef* ili9341, int_fast16_t x, int_fast
  * @param thickness Circle line thickness in pixels, must be >= 1 and <= r
  */
 void ILI9341_DrawCircleThick(
-    ILI9341_HandleTypeDef* ili9341,
+    const ILI9341_HandleTypeDef* ili9341,
     int_fast16_t x0,
     int_fast16_t y0,
     int_fast16_t r,
@@ -373,7 +346,13 @@ void ILI9341_DrawCircleThick(
  * @param r Radius of the circle
  * @param color 16-bit circle color in RGB565 format
  */
-void ILI9341_FillCircle(ILI9341_HandleTypeDef* ili9341, int_fast16_t x, int_fast16_t y, int_fast16_t r, uint16_t color);
+void ILI9341_FillCircle(
+    const ILI9341_HandleTypeDef* ili9341,
+    int_fast16_t x,
+    int_fast16_t y,
+    int_fast16_t r,
+    uint16_t color
+);
 
 /**
  * @brief Draw a thin ellipse outline
@@ -385,7 +364,7 @@ void ILI9341_FillCircle(ILI9341_HandleTypeDef* ili9341, int_fast16_t x, int_fast
  * @param color 16-bit ellipse color in RGB565 format
  */
 void ILI9341_DrawEllipse(
-    ILI9341_HandleTypeDef* ili9341,
+    const ILI9341_HandleTypeDef* ili9341,
     int_fast16_t xc,
     int_fast16_t yc,
     int_fast16_t rx,
@@ -404,7 +383,7 @@ void ILI9341_DrawEllipse(
  * @param thickness Ellipse line thickness in pixels, must be >= 1
  */
 void ILI9341_DrawEllipseThick(
-    ILI9341_HandleTypeDef* ili9341,
+    const ILI9341_HandleTypeDef* ili9341,
     int_fast16_t xc,
     int_fast16_t yc,
     int_fast16_t rx,
@@ -423,7 +402,7 @@ void ILI9341_DrawEllipseThick(
  * @param color 16-bit ellipse color in RGB565 format
  */
 void ILI9341_FillEllipse(
-    ILI9341_HandleTypeDef* ili9341,
+    const ILI9341_HandleTypeDef* ili9341,
     int_fast16_t xc,
     int_fast16_t yc,
     int_fast16_t rx,
@@ -440,7 +419,7 @@ void ILI9341_FillEllipse(
  * @param color 16-bit polygon color in RGB565 format
  * @note The polygon is automatically closed by connecting the last vertex to the first.
  */
-void ILI9341_DrawPolygon(ILI9341_HandleTypeDef* ili9341, int16_t* x, int16_t* y, size_t n, uint16_t color);
+void ILI9341_DrawPolygon(const ILI9341_HandleTypeDef* ili9341, int16_t* x, int16_t* y, size_t n, uint16_t color);
 
 /**
  * @brief Draw a thick polygon outline
@@ -454,7 +433,7 @@ void ILI9341_DrawPolygon(ILI9341_HandleTypeDef* ili9341, int16_t* x, int16_t* y,
  * @note The polygon is automatically closed by connecting the last vertex to the first.
  */
 void ILI9341_DrawPolygonThick(
-    ILI9341_HandleTypeDef* ili9341,
+    const ILI9341_HandleTypeDef* ili9341,
     int16_t* x,
     int16_t* y,
     size_t n,
@@ -473,6 +452,6 @@ void ILI9341_DrawPolygonThick(
  * @note The algorithm used is scanline algorithm, with support for concave and self-intersecting polygons. Max
  * intersections for scanline is 32.
  */
-void ILI9341_FillPolygon(ILI9341_HandleTypeDef* ili9341, int16_t* x, int16_t* y, size_t n, uint16_t color);
+void ILI9341_FillPolygon(const ILI9341_HandleTypeDef* ili9341, int16_t* x, int16_t* y, size_t n, uint16_t color);
 
 #endif  // __ILI9341_H__

@@ -6,11 +6,11 @@
  * @brief Select the ILI9341 display
  * @param ili9341 Pointer to ILI9341 handle structure
  */
-static void ILI9341_Select(ILI9341_HandleTypeDef* ili9341) {
+static void ILI9341_Select(const ILI9341_HandleTypeDef* ili9341) {
     HAL_GPIO_WritePin(ili9341->cs_port, ili9341->cs_pin, GPIO_PIN_RESET);
 }
 
-void ILI9341_Deselect(ILI9341_HandleTypeDef* ili9341) {
+void ILI9341_Deselect(const ILI9341_HandleTypeDef* ili9341) {
     HAL_GPIO_WritePin(ili9341->cs_port, ili9341->cs_pin, GPIO_PIN_SET);
 }
 
@@ -18,7 +18,7 @@ void ILI9341_Deselect(ILI9341_HandleTypeDef* ili9341) {
  * @brief Reset the ILI9341 display
  * @param ili9341 Pointer to ILI9341 handle structure
  */
-static void ILI9341_Reset(ILI9341_HandleTypeDef* ili9341) {
+static void ILI9341_Reset(const ILI9341_HandleTypeDef* ili9341) {
     HAL_GPIO_WritePin(ili9341->rst_port, ili9341->rst_pin, GPIO_PIN_RESET);
     HAL_Delay(5);
     HAL_GPIO_WritePin(ili9341->rst_port, ili9341->rst_pin, GPIO_PIN_SET);
@@ -29,7 +29,7 @@ static void ILI9341_Reset(ILI9341_HandleTypeDef* ili9341) {
  * @param ili9341 Pointer to ILI9341 handle structure
  * @param cmd Command byte to write
  */
-static void ILI9341_WriteCommand(ILI9341_HandleTypeDef* ili9341, uint8_t cmd) {
+static void ILI9341_WriteCommand(const ILI9341_HandleTypeDef* ili9341, uint8_t cmd) {
     HAL_GPIO_WritePin(ili9341->dc_port, ili9341->dc_pin, GPIO_PIN_RESET);
     HAL_SPI_Transmit(ili9341->spi_handle, &cmd, sizeof(cmd), HAL_MAX_DELAY);
 }
@@ -40,7 +40,7 @@ static void ILI9341_WriteCommand(ILI9341_HandleTypeDef* ili9341, uint8_t cmd) {
  * @param buff Pointer to the data buffer
  * @param bufferSize Size of the data buffer
  */
-static void ILI9341_WriteData(ILI9341_HandleTypeDef* ili9341, uint8_t* buff, size_t bufferSize) {
+static void ILI9341_WriteData(const ILI9341_HandleTypeDef* ili9341, uint8_t* buff, size_t bufferSize) {
     HAL_GPIO_WritePin(ili9341->dc_port, ili9341->dc_pin, GPIO_PIN_SET);
 
     // split data in small chunks because HAL can't send more then 64K at once
@@ -67,7 +67,7 @@ ILI9341_HandleTypeDef ILI9341_Init(
     width = abs(width);
     height = abs(height);
 
-    ILI9341_HandleTypeDef ili9341_instance = {
+    const ILI9341_HandleTypeDef ili9341_instance = {
         .spi_handle = spi_handle,
         .cs_port = cs_port,
         .cs_pin = cs_pin,
@@ -80,7 +80,7 @@ ILI9341_HandleTypeDef ILI9341_Init(
         .height = height
     };
 
-    ILI9341_HandleTypeDef* ili9341 = &ili9341_instance;
+    const ILI9341_HandleTypeDef* ili9341 = &ili9341_instance;
 
     ILI9341_Select(ili9341);
     ILI9341_Reset(ili9341);
@@ -337,15 +337,23 @@ void ILI9341_SetOrientation(ILI9341_HandleTypeDef* ili9341, int_fast8_t rotation
     ILI9341_Deselect(ili9341);
 }
 
-void ILI9341_SetBrightness(ILI9341_HandleTypeDef* ili9341, uint_fast8_t brightness) {
+void ILI9341_SetBrightness(const ILI9341_HandleTypeDef* ili9341, uint_fast8_t brightness) {
+    if (brightness > 0xFF) brightness = 0xFF;
+
     ILI9341_Select(ili9341);
 
     ILI9341_WriteCommand(ili9341, 0x51);
     {
-        uint8_t data[] = {brightness & 0xFF};
+        uint8_t data[] = {brightness};
         ILI9341_WriteData(ili9341, data, sizeof(data));
     }
 
+    ILI9341_Deselect(ili9341);
+}
+
+void ILI9341_InvertColors(const ILI9341_HandleTypeDef* ili9341, bool invert) {
+    ILI9341_Select(ili9341);
+    ILI9341_WriteCommand(ili9341, invert ? 0x21 /* INVON */ : 0x20 /* INVOFF */);
     ILI9341_Deselect(ili9341);
 }
 
@@ -358,7 +366,7 @@ void ILI9341_SetBrightness(ILI9341_HandleTypeDef* ili9341, uint_fast8_t brightne
  * @param y1 Y coordinate of the bottom-right corner of the window
  */
 static void ILI9341_SetAddressWindow(
-    ILI9341_HandleTypeDef* ili9341,
+    const ILI9341_HandleTypeDef* ili9341,
     uint16_t x0,
     uint16_t y0,
     uint16_t x1,
@@ -389,7 +397,12 @@ static void ILI9341_SetAddressWindow(
  * @param y Y coordinate of the pixel
  * @param color 16-bit pixel color in RGB565 format
  */
-static void ILI9341_DrawPixelFast(ILI9341_HandleTypeDef* ili9341, int_fast16_t x, int_fast16_t y, uint16_t color) {
+static void ILI9341_DrawPixelFast(
+    const ILI9341_HandleTypeDef* ili9341,
+    int_fast16_t x,
+    int_fast16_t y,
+    uint16_t color
+) {
     if (x < 0 || y < 0 || x >= ili9341->width || y >= ili9341->height) return;
 
     ILI9341_SetAddressWindow(ili9341, x, y, x + 1, y + 1);
@@ -397,7 +410,7 @@ static void ILI9341_DrawPixelFast(ILI9341_HandleTypeDef* ili9341, int_fast16_t x
     ILI9341_WriteData(ili9341, data, sizeof(data));
 }
 
-void ILI9341_DrawPixel(ILI9341_HandleTypeDef* ili9341, int_fast16_t x, int_fast16_t y, uint16_t color) {
+void ILI9341_DrawPixel(const ILI9341_HandleTypeDef* ili9341, int_fast16_t x, int_fast16_t y, uint16_t color) {
     ILI9341_Select(ili9341);
     ILI9341_DrawPixelFast(ili9341, x, y, color);
     ILI9341_Deselect(ili9341);
@@ -413,7 +426,7 @@ void ILI9341_DrawPixel(ILI9341_HandleTypeDef* ili9341, int_fast16_t x, int_fast1
  * @param color 16-bit fill color in RGB565 format
  */
 static void ILI9341_FillRectangleFast(
-    ILI9341_HandleTypeDef* ili9341,
+    const ILI9341_HandleTypeDef* ili9341,
     int_fast16_t x,
     int_fast16_t y,
     int_fast16_t w,
@@ -464,7 +477,7 @@ static void ILI9341_FillRectangleFast(
 }
 
 void ILI9341_FillRectangle(
-    ILI9341_HandleTypeDef* ili9341,
+    const ILI9341_HandleTypeDef* ili9341,
     int_fast16_t x,
     int_fast16_t y,
     int_fast16_t w,
@@ -476,116 +489,24 @@ void ILI9341_FillRectangle(
     ILI9341_Deselect(ili9341);
 }
 
-void ILI9341_FillScreen(ILI9341_HandleTypeDef* ili9341, uint16_t color) {
+void ILI9341_FillScreen(const ILI9341_HandleTypeDef* ili9341, uint16_t color) {
     ILI9341_Select(ili9341);
     ILI9341_FillRectangleFast(ili9341, 0, 0, ili9341->width, ili9341->height, color);
     ILI9341_Deselect(ili9341);
 }
 
 /**
- * @brief Write a character at specified coordinates without selecting/deselecting the display
+ * @brief Draw a glyph at specified coordinates without selecting/deselecting the display
  * @param ili9341 Pointer to ILI9341 handle structure
  * @param x X coordinate of the left of the character
  * @param y Y coordinate of the baseline of the character
- * @param ch ASCII character to write
- * @param font Font definition to use for rendering the character
- * @param color 16-bit character color in RGB565 format
- * @param bgColor 16-bit background color in RGB565 format
- */
-static void ILI9341_WriteChar(
-    ILI9341_HandleTypeDef* ili9341,
-    int_fast16_t x,
-    int_fast16_t y,
-    ILI9341_GlyphDef glyph,
-    uint16_t color,
-    uint16_t bgColor
-) {
-    int_fast16_t startX = x + glyph.bbX;
-    int_fast16_t startY = y - glyph.bbY - glyph.bbH + 1;
-    int_fast16_t endX = startX + glyph.bbW - 1;
-    int_fast16_t endY = startY + glyph.bbH - 1;
-
-    if (endX < 0 || endY < 0 || startX >= ili9341->width || startY >= ili9341->height) return;
-
-    int_fast16_t clipStartX = startX < 0 ? -startX : 0;
-    int_fast16_t clipStartY = startY < 0 ? -startY : 0;
-    int_fast16_t clipEndX = endX >= ili9341->width ? ili9341->width - startX - 1 : glyph.bbW - 1;
-    int_fast16_t clipEndY = endY >= ili9341->height ? ili9341->height - startY - 1 : glyph.bbH - 1;
-
-    color = (color >> 8) | (color << 8);
-    bgColor = (bgColor >> 8) | (bgColor << 8);
-
-    uint16_t buffer[ILI9341_WRITE_CHAR_BUFFER_SIZE];
-    size_t bufferIndex = 0;
-
-    int_fast16_t index = 0;
-    uint8_t mask = 0x80;
-
-    ILI9341_SetAddressWindow(ili9341, startX + clipStartX, startY + clipStartY, startX + clipEndX, startY + clipEndY);
-
-    for (int_fast16_t row = 0; row < glyph.bbH; row++) {
-        for (int_fast16_t col = 0; col < glyph.bbW; col++) {
-            if (row >= clipStartY && row <= clipEndY && col >= clipStartX && col <= clipEndX) {
-                if (glyph.data[index] & mask) {
-                    buffer[bufferIndex++] = color;
-                } else {
-                    buffer[bufferIndex++] = bgColor;
-                }
-
-                if (bufferIndex >= ILI9341_WRITE_CHAR_BUFFER_SIZE) {
-                    ILI9341_WriteData(ili9341, (uint8_t*)buffer, bufferIndex * 2);
-                    bufferIndex = 0;
-                }
-            }
-
-            mask >>= 1;
-            if (mask == 0) {
-                index++;
-                mask = 0x80;
-            }
-        }
-    }
-
-    if (bufferIndex > 0) ILI9341_WriteData(ili9341, (uint8_t*)buffer, bufferIndex * 2);
-}
-
-void ILI9341_WriteString(
-    ILI9341_HandleTypeDef* ili9341,
-    int_fast16_t x,
-    int_fast16_t y,
-    const char* str,
-    ILI9341_FontDef font,
-    uint16_t color,
-    uint16_t bgColor,
-    int_fast16_t tracking
-) {
-    ILI9341_Select(ili9341);
-
-    while (*str) {
-        char c = *str;
-        if (c < font.startCodepoint || c > font.endCodepoint) c = ' ';
-        ILI9341_GlyphDef glyph = font.glyphs[c - font.startCodepoint];
-        ILI9341_WriteChar(ili9341, x, y, glyph, color, bgColor);
-        x += glyph.advance + tracking;
-        str++;
-    }
-
-    ILI9341_Deselect(ili9341);
-}
-
-/**
- * @brief Write a scaled character at specified coordinates without selecting/deselecting the display
- * @param ili9341 Pointer to ILI9341 handle structure
- * @param x X coordinate of the left of the character
- * @param y Y coordinate of the baseline of the character
- * @param ch ASCII character to write
- * @param font Font definition to use for rendering the character
+ * @param glyph Glyph to render
  * @param color 16-bit character color in RGB565 format
  * @param bgColor 16-bit background color in RGB565 format
  * @param scale Scaling factor (integer) to enlarge the character
  */
-static void ILI9341_WriteCharScaled(
-    ILI9341_HandleTypeDef* ili9341,
+static void ILI9341_DrawGlyphFast(
+    const ILI9341_HandleTypeDef* ili9341,
     int_fast16_t x,
     int_fast16_t y,
     ILI9341_GlyphDef glyph,
@@ -598,7 +519,9 @@ static void ILI9341_WriteCharScaled(
     int_fast16_t endX = startX + glyph.bbW * scale - 1;
     int_fast16_t endY = startY + glyph.bbH * scale - 1;
 
-    if (endX < 0 || endY < 0 || startX >= ili9341->width || startY >= ili9341->height) return;
+    if (endX < 0 || endY < 0 || startX >= ili9341->width || startY >= ili9341->height ||
+        (glyph.bbW == 0 || glyph.bbH == 0))
+        return;
 
     int_fast16_t clipStartX = startX < 0 ? -startX : 0;
     int_fast16_t clipStartY = startY < 0 ? -startY : 0;
@@ -608,7 +531,7 @@ static void ILI9341_WriteCharScaled(
     color = (color >> 8) | (color << 8);
     bgColor = (bgColor >> 8) | (bgColor << 8);
 
-    uint16_t buffer[ILI9341_WRITE_CHAR_BUFFER_SIZE];
+    uint16_t buffer[ILI9341_DRAW_GLYPH_BUFFER_SIZE];
     size_t bufferIndex = 0;
 
     int_fast32_t bitIndex = 0;
@@ -623,15 +546,15 @@ static void ILI9341_WriteCharScaled(
                 int_fast16_t index = bitIndex / 8;
                 for (int_fast16_t hScale = 0; hScale < scale; hScale++) {
                     int_fast16_t pixelCol = col * scale + hScale;
-                    if (pixelRow >= clipStartY && pixelRow <= clipEndY && pixelCol >= clipStartX &&
-                        pixelCol <= clipEndX) {
+                    if ((pixelRow >= clipStartY && pixelRow <= clipEndY) &&
+                        (pixelCol >= clipStartX && pixelCol <= clipEndX)) {
                         if (glyph.data[index] & mask) {
                             buffer[bufferIndex++] = color;
                         } else {
                             buffer[bufferIndex++] = bgColor;
                         }
 
-                        if (bufferIndex >= ILI9341_WRITE_CHAR_BUFFER_SIZE) {
+                        if (bufferIndex >= ILI9341_DRAW_GLYPH_BUFFER_SIZE) {
                             ILI9341_WriteData(ili9341, (uint8_t*)buffer, bufferIndex * 2);
                             bufferIndex = 0;
                         }
@@ -647,86 +570,62 @@ static void ILI9341_WriteCharScaled(
     if (bufferIndex > 0) ILI9341_WriteData(ili9341, (uint8_t*)buffer, bufferIndex * 2);
 }
 
-void ILI9341_WriteStringScaled(
-    ILI9341_HandleTypeDef* ili9341,
+void ILI9341_WriteString(
+    const ILI9341_HandleTypeDef* ili9341,
     int_fast16_t x,
     int_fast16_t y,
     const char* str,
     ILI9341_FontDef font,
     uint16_t color,
     uint16_t bgColor,
+    bool wrap,
     int_fast16_t scale,
-    int_fast16_t tracking
+    int_fast16_t tracking,
+    int_fast16_t leading
 ) {
-    scale = abs(scale);
+    if (scale < 1 || y + font.descent * scale < 0 || y - font.ascent * scale >= ili9341->height) return;
+
+    int_fast16_t originalX = x;
 
     ILI9341_Select(ili9341);
 
-    while (*str) {
-        char c = *str;
-        if (c < font.startCodepoint || c > font.endCodepoint) c = ' ';
+    for (unsigned char c; (c = *(str++));) {
+        if (c == '\r') {
+            x = originalX;
+            continue;
+        }
+
+        if (c == '\n') {
+            y += (font.ascent + font.descent) * scale + leading;
+            x = originalX;
+            if (y - font.ascent * scale >= ili9341->height) break;
+            continue;
+        }
+
+        if (c < font.startCodepoint || c > font.endCodepoint) { c = FALLBACK_CODEPOINT; }
         ILI9341_GlyphDef glyph = font.glyphs[c - font.startCodepoint];
-        ILI9341_WriteCharScaled(ili9341, x, y, glyph, color, bgColor, scale);
-        x += glyph.advance * scale + tracking;
-        str++;
-    }
 
-    ILI9341_Deselect(ili9341);
-}
-
-/**
- * @brief Write a character with transparent background at specified coordinates without selecting/deselecting the
- * display
- * @param ili9341 Pointer to ILI9341 handle structure
- * @param x X coordinate of the left of the character
- * @param y Y coordinate of the baseline of the character
- * @param ch ASCII character to write
- * @param font Font definition to use for rendering the character
- * @param color 16-bit character color in RGB565 format
- */
-static void ILI9341_WriteCharTransparent(
-    ILI9341_HandleTypeDef* ili9341,
-    int_fast16_t x,
-    int_fast16_t y,
-    ILI9341_GlyphDef glyph,
-    uint16_t color
-) {
-    int_fast16_t startX = x + glyph.bbX;
-    int_fast16_t startY = y - glyph.bbY - glyph.bbH + 1;
-
-    int_fast16_t index = 0;
-    uint8_t mask = 0x80;
-
-    for (int_fast16_t row = 0; row < glyph.bbH; row++) {
-        for (int_fast16_t col = 0; col < glyph.bbW; col++) {
-            if (glyph.data[index] & mask) { ILI9341_DrawPixelFast(ili9341, startX + col, startY + row, color); }
-            mask >>= 1;
-            if (mask == 0) {
-                index++;
-                mask = 0x80;
+        // Only wrap if current char is not zero-width, help prevent newline on diacritics
+        if (wrap && glyph.advance > 0 && x + (glyph.bbX + glyph.bbW) * scale + 1 >= ili9341->width) {
+            y += (font.ascent + font.descent) * scale + leading;
+            x = originalX;
+            if (y - font.ascent * scale >= ili9341->height) break;
+            if (c == 0x20 || c == 0xA0) {  // Ignore space and nbsp after newline
+                continue;
             }
         }
-    }
-}
 
-void ILI9341_WriteStringTransparent(
-    ILI9341_HandleTypeDef* ili9341,
-    int_fast16_t x,
-    int_fast16_t y,
-    const char* str,
-    ILI9341_FontDef font,
-    uint16_t color,
-    int_fast16_t tracking
-) {
-    ILI9341_Select(ili9341);
+        ILI9341_DrawGlyphFast(ili9341, x, y, glyph, color, bgColor, scale);
+        x += glyph.advance * scale;
 
-    while (*str) {
-        char c = *str;
-        if (c < font.startCodepoint || c > font.endCodepoint) c = ' ';
-        ILI9341_GlyphDef glyph = font.glyphs[c - font.startCodepoint];
-        ILI9341_WriteCharTransparent(ili9341, x, y, glyph, color);
-        x += glyph.advance + tracking;
-        str++;
+        c = *str;
+        if (c < font.startCodepoint || c > font.endCodepoint) { c = FALLBACK_CODEPOINT; }
+
+        // Only apply tracking if next char is not zero-width, help diacritics stay aligned
+        if (tracking) {
+            ILI9341_GlyphDef glyph = font.glyphs[c - font.startCodepoint];
+            x += glyph.advance > 0 ? tracking : 0;
+        }
     }
 
     ILI9341_Deselect(ili9341);
@@ -743,8 +642,8 @@ void ILI9341_WriteStringTransparent(
  * @param color 16-bit character color in RGB565 format
  * @param scale Scaling factor (integer) to enlarge the character
  */
-static void ILI9341_WriteCharTransparentScaled(
-    ILI9341_HandleTypeDef* ili9341,
+static void ILI9341_DrawGlyphTransparentFast(
+    const ILI9341_HandleTypeDef* ili9341,
     int_fast16_t x,
     int_fast16_t y,
     ILI9341_GlyphDef glyph,
@@ -753,6 +652,12 @@ static void ILI9341_WriteCharTransparentScaled(
 ) {
     int_fast16_t startX = x + glyph.bbX * scale;
     int_fast16_t startY = y - glyph.bbY * scale - glyph.bbH * scale + 1;
+    int_fast16_t endX = startX + glyph.bbW * scale - 1;
+    int_fast16_t endY = startY + glyph.bbH * scale - 1;
+
+    if (endX < 0 || endY < 0 || startX >= ili9341->width || startY >= ili9341->height ||
+        (glyph.bbW == 0 || glyph.bbH == 0))
+        return;
 
     int_fast16_t index = 0;
     uint8_t mask = 0x80;
@@ -771,34 +676,68 @@ static void ILI9341_WriteCharTransparentScaled(
     }
 }
 
-void ILI9341_WriteStringTransparentScaled(
-    ILI9341_HandleTypeDef* ili9341,
+void ILI9341_WriteStringTransparent(
+    const ILI9341_HandleTypeDef* ili9341,
     int_fast16_t x,
     int_fast16_t y,
     const char* str,
     ILI9341_FontDef font,
     uint16_t color,
+    bool wrap,
     int_fast16_t scale,
-    int_fast16_t tracking
+    int_fast16_t tracking,
+    int_fast16_t leading
 ) {
-    scale = abs(scale);
+    if (scale < 1 || y + font.descent * scale < 0 || y - font.ascent * scale >= ili9341->height) return;
+
+    int_fast16_t originalX = x;
 
     ILI9341_Select(ili9341);
 
-    while (*str) {
-        char c = *str;
-        if (c < font.startCodepoint || c > font.endCodepoint) c = ' ';
+    for (unsigned char c; (c = *(str++));) {
+        if (c == '\r') {
+            x = originalX;
+            continue;
+        }
+
+        if (c == '\n') {
+            y += (font.ascent + font.descent) * scale + leading;
+            x = originalX;
+            if (y - font.ascent * scale >= ili9341->height) break;
+            continue;
+        }
+
+        if (c < font.startCodepoint || c > font.endCodepoint) { c = FALLBACK_CODEPOINT; }
         ILI9341_GlyphDef glyph = font.glyphs[c - font.startCodepoint];
-        ILI9341_WriteCharTransparentScaled(ili9341, x, y, glyph, color, scale);
-        x += glyph.advance * scale + tracking;
-        str++;
+
+        // Only wrap if current char is not zero-width, help prevent newline on diacritics
+        if (wrap && glyph.advance > 0 && x + (glyph.bbX + glyph.bbW) * scale + 1 >= ili9341->width) {
+            y += (font.ascent + font.descent) * scale + leading;
+            x = originalX;
+            if (y - font.ascent * scale >= ili9341->height) break;
+            if (c == 0x20 || c == 0xA0) {  // Ignore space and nbsp after newline
+                continue;
+            }
+        }
+
+        ILI9341_DrawGlyphTransparentFast(ili9341, x, y, glyph, color, scale);
+        x += glyph.advance * scale;
+
+        c = *str;
+        if (c < font.startCodepoint || c > font.endCodepoint) { c = FALLBACK_CODEPOINT; }
+
+        // Only apply tracking if next char is not zero-width, help diacritics stay aligned
+        if (tracking) {
+            ILI9341_GlyphDef glyph = font.glyphs[c - font.startCodepoint];
+            x += glyph.advance > 0 ? tracking : 0;
+        }
     }
 
     ILI9341_Deselect(ili9341);
 }
 
 void ILI9341_DrawImage(
-    ILI9341_HandleTypeDef* ili9341,
+    const ILI9341_HandleTypeDef* ili9341,
     int_fast16_t x,
     int_fast16_t y,
     int_fast16_t w,
@@ -824,12 +763,6 @@ void ILI9341_DrawImage(
     ILI9341_Deselect(ili9341);
 }
 
-void ILI9341_InvertColors(ILI9341_HandleTypeDef* ili9341, bool invert) {
-    ILI9341_Select(ili9341);
-    ILI9341_WriteCommand(ili9341, invert ? 0x21 /* INVON */ : 0x20 /* INVOFF */);
-    ILI9341_Deselect(ili9341);
-}
-
 /**
  * @brief Draw a line using Bresenham's algorithm without selecting/deselecting the display
  * @param ili9341 Pointer to ILI9341 handle structure
@@ -840,7 +773,7 @@ void ILI9341_InvertColors(ILI9341_HandleTypeDef* ili9341, bool invert) {
  * @param color 16-bit line color in RGB565 format
  */
 static void ILI9341_DrawLineFast(
-    ILI9341_HandleTypeDef* ili9341,
+    const ILI9341_HandleTypeDef* ili9341,
     int_fast16_t x1,
     int_fast16_t y1,
     int_fast16_t x2,
@@ -875,7 +808,7 @@ static void ILI9341_DrawLineFast(
 }
 
 void ILI9341_DrawLine(
-    ILI9341_HandleTypeDef* ili9341,
+    const ILI9341_HandleTypeDef* ili9341,
     int_fast16_t x1,
     int_fast16_t y1,
     int_fast16_t x2,
@@ -888,7 +821,7 @@ void ILI9341_DrawLine(
 }
 
 void ILI9341_DrawLineThick(
-    ILI9341_HandleTypeDef* ili9341,
+    const ILI9341_HandleTypeDef* ili9341,
     int_fast16_t x1,
     int_fast16_t y1,
     int_fast16_t x2,
@@ -939,7 +872,7 @@ void ILI9341_DrawLineThick(
 }
 
 void ILI9341_DrawRectangle(
-    ILI9341_HandleTypeDef* ili9341,
+    const ILI9341_HandleTypeDef* ili9341,
     int_fast16_t x,
     int_fast16_t y,
     int_fast16_t w,
@@ -950,7 +883,7 @@ void ILI9341_DrawRectangle(
 }
 
 void ILI9341_DrawRectangleThick(
-    ILI9341_HandleTypeDef* ili9341,
+    const ILI9341_HandleTypeDef* ili9341,
     int_fast16_t x,
     int_fast16_t y,
     int_fast16_t w,
@@ -971,7 +904,7 @@ void ILI9341_DrawRectangleThick(
 }
 
 void ILI9341_DrawCircle(
-    ILI9341_HandleTypeDef* ili9341,
+    const ILI9341_HandleTypeDef* ili9341,
     int_fast16_t xc,
     int_fast16_t yc,
     int_fast16_t r,
@@ -1017,7 +950,7 @@ void ILI9341_DrawCircle(
 }
 
 void ILI9341_DrawCircleThick(
-    ILI9341_HandleTypeDef* ili9341,
+    const ILI9341_HandleTypeDef* ili9341,
     int_fast16_t xc,
     int_fast16_t yc,
     int_fast16_t r,
@@ -1049,7 +982,7 @@ void ILI9341_DrawCircleThick(
 }
 
 void ILI9341_FillCircle(
-    ILI9341_HandleTypeDef* ili9341,
+    const ILI9341_HandleTypeDef* ili9341,
     int_fast16_t xc,
     int_fast16_t yc,
     int_fast16_t r,
@@ -1090,7 +1023,7 @@ void ILI9341_FillCircle(
 }
 
 void ILI9341_DrawEllipse(
-    ILI9341_HandleTypeDef* ili9341,
+    const ILI9341_HandleTypeDef* ili9341,
     int_fast16_t xc,
     int_fast16_t yc,
     int_fast16_t rx,
@@ -1157,7 +1090,7 @@ void ILI9341_DrawEllipse(
 }
 
 void ILI9341_DrawEllipseThick(
-    ILI9341_HandleTypeDef* ili9341,
+    const ILI9341_HandleTypeDef* ili9341,
     int_fast16_t xc,
     int_fast16_t yc,
     int_fast16_t rx,
@@ -1195,7 +1128,7 @@ void ILI9341_DrawEllipseThick(
 }
 
 void ILI9341_FillEllipse(
-    ILI9341_HandleTypeDef* ili9341,
+    const ILI9341_HandleTypeDef* ili9341,
     int_fast16_t xc,
     int_fast16_t yc,
     int_fast16_t rx,
@@ -1258,7 +1191,7 @@ void ILI9341_FillEllipse(
     ILI9341_Deselect(ili9341);
 }
 
-void ILI9341_DrawPolygon(ILI9341_HandleTypeDef* ili9341, int16_t* x, int16_t* y, size_t n, uint16_t color) {
+void ILI9341_DrawPolygon(const ILI9341_HandleTypeDef* ili9341, int16_t* x, int16_t* y, size_t n, uint16_t color) {
     if (n < 2) return;
 
     ILI9341_Select(ili9341);
@@ -1270,7 +1203,7 @@ void ILI9341_DrawPolygon(ILI9341_HandleTypeDef* ili9341, int16_t* x, int16_t* y,
 }
 
 void ILI9341_DrawPolygonThick(
-    ILI9341_HandleTypeDef* ili9341,
+    const ILI9341_HandleTypeDef* ili9341,
     int16_t* x,
     int16_t* y,
     size_t n,
@@ -1286,7 +1219,7 @@ void ILI9341_DrawPolygonThick(
     ILI9341_DrawLineThick(ili9341, x[n - 1], y[n - 1], x[0], y[0], color, thickness, cap);
 }
 
-void ILI9341_FillPolygon(ILI9341_HandleTypeDef* ili9341, int16_t* x, int16_t* y, size_t n, uint16_t color) {
+void ILI9341_FillPolygon(const ILI9341_HandleTypeDef* ili9341, int16_t* x, int16_t* y, size_t n, uint16_t color) {
     if (n < 3) return;
 
     // find max and min Y

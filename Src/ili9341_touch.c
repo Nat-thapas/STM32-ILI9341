@@ -6,11 +6,11 @@
  * @brief Select the ILI9341 touch controller
  * @param ili9341_touch Pointer to the ILI9341_Touch_HandleTypeDef structure
  */
-static void ILI9341_Touch_Select(ILI9341_Touch_HandleTypeDef* ili9341_touch) {
+static void ILI9341_Touch_Select(const ILI9341_Touch_HandleTypeDef* ili9341_touch) {
     HAL_GPIO_WritePin(ili9341_touch->cs_port, ili9341_touch->cs_pin, GPIO_PIN_RESET);
 }
 
-void ILI9341_Touch_Deselect(ILI9341_Touch_HandleTypeDef* ili9341_touch) {
+void ILI9341_Touch_Deselect(const ILI9341_Touch_HandleTypeDef* ili9341_touch) {
     HAL_GPIO_WritePin(ili9341_touch->cs_port, ili9341_touch->cs_pin, GPIO_PIN_SET);
 }
 
@@ -27,7 +27,7 @@ ILI9341_Touch_HandleTypeDef ILI9341_Touch_Init(
     width = abs(width);
     height = abs(height);
 
-    ILI9341_Touch_HandleTypeDef ili9341_touch_instance = {
+    const ILI9341_Touch_HandleTypeDef ili9341_touch_instance = {
         .spi_handle = spi_handle,
         .cs_port = cs_port,
         .cs_pin = cs_pin,
@@ -61,11 +61,11 @@ void ILI9341_Touch_SetOrientation(ILI9341_Touch_HandleTypeDef* ili9341_touch, in
     ili9341_touch->rotation = rotation;
 }
 
-bool ILI9341_Touch_IsPressed(ILI9341_Touch_HandleTypeDef* ili9341_touch) {
+bool ILI9341_Touch_IsPressed(const ILI9341_Touch_HandleTypeDef* ili9341_touch) {
     return HAL_GPIO_ReadPin(ili9341_touch->irq_port, ili9341_touch->irq_pin) == GPIO_PIN_RESET;
 }
 
-bool ILI9341_Touch_GetCoordinates(ILI9341_Touch_HandleTypeDef* ili9341_touch, uint16_t* x, uint16_t* y) {
+bool ILI9341_Touch_GetCoordinates(const ILI9341_Touch_HandleTypeDef* ili9341_touch, uint16_t* x, uint16_t* y) {
     static const uint8_t cmdReadX[] = {0xD0};
     static const uint8_t cmdReadY[] = {0x90};
     static const uint8_t zeroes[] = {0x00, 0x00};

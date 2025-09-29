@@ -328,7 +328,7 @@ static const ILI9341_GlyphDef ILI9341_Font_Terminus6x12b_Glyphs[] = {
 };
 const ILI9341_FontDef ILI9341_Font_Terminus6x12b = { 0x20, 0xFF, 60, 10, 2, ILI9341_Font_Terminus6x12b_Glyphs };
 
-static const ILI9341_GlyphDef ILI9341_Font_Terminus6x12n_Glyphs[] = {
+static const ILI9341_GlyphDef ILI9341_Font_Terminus6x12_Glyphs[] = {
     {  0,   0,  0,  0,  6, NULL}, /*   */
     {  2,   0,  1,  8,  6, (const uint8_t[]){0xFB}}, /* ! */
     {  1,   6,  3,  3,  6, (const uint8_t[]){0xB6, 0x80}}, /* " */
@@ -554,7 +554,7 @@ static const ILI9341_GlyphDef ILI9341_Font_Terminus6x12n_Glyphs[] = {
     {  0,  -2,  5, 10,  6, (const uint8_t[]){0x84, 0x3D, 0x18, 0xC6, 0x3E, 0x84, 0x00}}, /* þ */
     {  0,  -2,  5, 10,  6, (const uint8_t[]){0x52, 0xA3, 0x18, 0xC6, 0x2F, 0x0B, 0x80}}, /* ÿ */
 };
-const ILI9341_FontDef ILI9341_Font_Terminus6x12n = { 0x20, 0xFF, 60, 10, 2, ILI9341_Font_Terminus6x12n_Glyphs };
+const ILI9341_FontDef ILI9341_Font_Terminus6x12 = { 0x20, 0xFF, 60, 10, 2, ILI9341_Font_Terminus6x12_Glyphs };
 
 static const ILI9341_GlyphDef ILI9341_Font_Terminus8x14b_Glyphs[] = {
     {  0,   0,  0,  0,  8, NULL}, /*   */
@@ -784,7 +784,7 @@ static const ILI9341_GlyphDef ILI9341_Font_Terminus8x14b_Glyphs[] = {
 };
 const ILI9341_FontDef ILI9341_Font_Terminus8x14b = { 0x20, 0xFF, 80, 12, 2, ILI9341_Font_Terminus8x14b_Glyphs };
 
-static const ILI9341_GlyphDef ILI9341_Font_Terminus8x14n_Glyphs[] = {
+static const ILI9341_GlyphDef ILI9341_Font_Terminus8x14_Glyphs[] = {
     {  0,   0,  0,  0,  8, NULL}, /*   */
     {  3,   0,  1, 10,  8, (const uint8_t[]){0xFE, 0xC0}}, /* ! */
     {  2,   8,  4,  3,  8, (const uint8_t[]){0x99, 0x90}}, /* " */
@@ -1010,7 +1010,7 @@ static const ILI9341_GlyphDef ILI9341_Font_Terminus8x14n_Glyphs[] = {
     {  1,  -2,  6, 12,  8, (const uint8_t[]){0x82, 0x08, 0x3E, 0x86, 0x18, 0x61, 0x87, 0xE8, 0x20}}, /* þ */
     {  1,  -2,  6, 12,  8, (const uint8_t[]){0x49, 0x20, 0x21, 0x86, 0x18, 0x61, 0x85, 0xF0, 0x5E}}, /* ÿ */
 };
-const ILI9341_FontDef ILI9341_Font_Terminus8x14n = { 0x20, 0xFF, 80, 12, 2, ILI9341_Font_Terminus8x14n_Glyphs };
+const ILI9341_FontDef ILI9341_Font_Terminus8x14 = { 0x20, 0xFF, 80, 12, 2, ILI9341_Font_Terminus8x14_Glyphs };
 
 static const ILI9341_GlyphDef ILI9341_Font_Terminus8x14v_Glyphs[] = {
     {  0,   0,  0,  0,  8, NULL}, /*   */
@@ -1468,7 +1468,7 @@ static const ILI9341_GlyphDef ILI9341_Font_Terminus8x16b_Glyphs[] = {
 };
 const ILI9341_FontDef ILI9341_Font_Terminus8x16b = { 0x20, 0xFF, 80, 12, 4, ILI9341_Font_Terminus8x16b_Glyphs };
 
-static const ILI9341_GlyphDef ILI9341_Font_Terminus8x16n_Glyphs[] = {
+static const ILI9341_GlyphDef ILI9341_Font_Terminus8x16_Glyphs[] = {
     {  0,   0,  0,  0,  8, NULL}, /*   */
     {  3,   0,  1, 10,  8, (const uint8_t[]){0xFE, 0xC0}}, /* ! */
     {  2,   8,  4,  3,  8, (const uint8_t[]){0x99, 0x90}}, /* " */
@@ -1694,7 +1694,7 @@ static const ILI9341_GlyphDef ILI9341_Font_Terminus8x16n_Glyphs[] = {
     {  1,  -3,  6, 13,  8, (const uint8_t[]){0x82, 0x08, 0x3E, 0x86, 0x18, 0x61, 0x87, 0xE8, 0x20, 0x80}}, /* þ */
     {  1,  -3,  6, 13,  8, (const uint8_t[]){0x49, 0x20, 0x21, 0x86, 0x18, 0x61, 0x85, 0xF0, 0x41, 0x78}}, /* ÿ */
 };
-const ILI9341_FontDef ILI9341_Font_Terminus8x16n = { 0x20, 0xFF, 80, 12, 4, ILI9341_Font_Terminus8x16n_Glyphs };
+const ILI9341_FontDef ILI9341_Font_Terminus8x16 = { 0x20, 0xFF, 80, 12, 4, ILI9341_Font_Terminus8x16_Glyphs };
 
 static const ILI9341_GlyphDef ILI9341_Font_Terminus8x16v_Glyphs[] = {
     {  0,   0,  0,  0,  8, NULL}, /*   */
@@ -2152,7 +2152,7 @@ static const ILI9341_GlyphDef ILI9341_Font_Terminus10x18b_Glyphs[] = {
 };
 const ILI9341_FontDef ILI9341_Font_Terminus10x18b = { 0x20, 0xFF, 100, 15, 3, ILI9341_Font_Terminus10x18b_Glyphs };
 
-static const ILI9341_GlyphDef ILI9341_Font_Terminus10x18n_Glyphs[] = {
+static const ILI9341_GlyphDef ILI9341_Font_Terminus10x18_Glyphs[] = {
     {  0,   0,  0,  0, 10, NULL}, /*   */
     {  4,   0,  1, 12, 10, (const uint8_t[]){0xFF, 0x30}}, /* ! */
     {  2,  10,  5,  4, 10, (const uint8_t[]){0x8C, 0x63, 0x10}}, /* " */
@@ -2378,7 +2378,7 @@ static const ILI9341_GlyphDef ILI9341_Font_Terminus10x18n_Glyphs[] = {
     {  1,  -3,  7, 15, 10, (const uint8_t[]){0x81, 0x02, 0x07, 0xE8, 0x30, 0x60, 0xC1, 0x83, 0x06, 0x0F, 0xE8, 0x10, 0x20, 0x00}}, /* þ */
     {  1,  -3,  7, 15, 10, (const uint8_t[]){0x44, 0x88, 0x04, 0x18, 0x30, 0x60, 0xC1, 0x83, 0x06, 0x0B, 0xF0, 0x20, 0x5F, 0x00}}, /* ÿ */
 };
-const ILI9341_FontDef ILI9341_Font_Terminus10x18n = { 0x20, 0xFF, 100, 15, 3, ILI9341_Font_Terminus10x18n_Glyphs };
+const ILI9341_FontDef ILI9341_Font_Terminus10x18 = { 0x20, 0xFF, 100, 15, 3, ILI9341_Font_Terminus10x18_Glyphs };
 
 static const ILI9341_GlyphDef ILI9341_Font_Terminus10x20b_Glyphs[] = {
     {  0,   0,  0,  0, 10, NULL}, /*   */
@@ -2608,7 +2608,7 @@ static const ILI9341_GlyphDef ILI9341_Font_Terminus10x20b_Glyphs[] = {
 };
 const ILI9341_FontDef ILI9341_Font_Terminus10x20b = { 0x20, 0xFF, 100, 16, 4, ILI9341_Font_Terminus10x20b_Glyphs };
 
-static const ILI9341_GlyphDef ILI9341_Font_Terminus10x20n_Glyphs[] = {
+static const ILI9341_GlyphDef ILI9341_Font_Terminus10x20_Glyphs[] = {
     {  0,   0,  0,  0, 10, NULL}, /*   */
     {  4,   0,  1, 13, 10, (const uint8_t[]){0xFF, 0x98}}, /* ! */
     {  2,  11,  5,  4, 10, (const uint8_t[]){0x8C, 0x63, 0x10}}, /* " */
@@ -2834,7 +2834,7 @@ static const ILI9341_GlyphDef ILI9341_Font_Terminus10x20n_Glyphs[] = {
     {  1,  -3,  7, 16, 10, (const uint8_t[]){0x81, 0x02, 0x04, 0x0F, 0xD0, 0x60, 0xC1, 0x83, 0x06, 0x0C, 0x1F, 0xD0, 0x20, 0x40}}, /* þ */
     {  1,  -3,  7, 15, 10, (const uint8_t[]){0x44, 0x88, 0x04, 0x18, 0x30, 0x60, 0xC1, 0x83, 0x06, 0x0B, 0xF0, 0x20, 0x5F, 0x00}}, /* ÿ */
 };
-const ILI9341_FontDef ILI9341_Font_Terminus10x20n = { 0x20, 0xFF, 100, 16, 4, ILI9341_Font_Terminus10x20n_Glyphs };
+const ILI9341_FontDef ILI9341_Font_Terminus10x20 = { 0x20, 0xFF, 100, 16, 4, ILI9341_Font_Terminus10x20_Glyphs };
 
 static const ILI9341_GlyphDef ILI9341_Font_Terminus11x22b_Glyphs[] = {
     {  0,   0,  0,  0, 11, NULL}, /*   */
@@ -3064,7 +3064,7 @@ static const ILI9341_GlyphDef ILI9341_Font_Terminus11x22b_Glyphs[] = {
 };
 const ILI9341_FontDef ILI9341_Font_Terminus11x22b = { 0x20, 0xFF, 110, 17, 5, ILI9341_Font_Terminus11x22b_Glyphs };
 
-static const ILI9341_GlyphDef ILI9341_Font_Terminus11x22n_Glyphs[] = {
+static const ILI9341_GlyphDef ILI9341_Font_Terminus11x22_Glyphs[] = {
     {  0,   0,  0,  0, 11, NULL}, /*   */
     {  5,   0,  1, 14, 11, (const uint8_t[]){0xFF, 0x9C}}, /* ! */
     {  3,  11,  5,  5, 11, (const uint8_t[]){0x8C, 0x63, 0x18, 0x80}}, /* " */
@@ -3290,7 +3290,7 @@ static const ILI9341_GlyphDef ILI9341_Font_Terminus11x22n_Glyphs[] = {
     {  1,  -4,  8, 18, 11, (const uint8_t[]){0x80, 0x80, 0x80, 0x80, 0xFC, 0x82, 0x81, 0x81, 0x81, 0x81, 0x81, 0x81, 0x82, 0xFC, 0x80, 0x80, 0x80, 0x80}}, /* þ */
     {  1,  -4,  8, 18, 11, (const uint8_t[]){0x42, 0x42, 0x42, 0x00, 0x81, 0x81, 0x81, 0x81, 0x81, 0x81, 0x81, 0x81, 0x41, 0x3F, 0x01, 0x01, 0x02, 0x7C}}, /* ÿ */
 };
-const ILI9341_FontDef ILI9341_Font_Terminus11x22n = { 0x20, 0xFF, 110, 17, 5, ILI9341_Font_Terminus11x22n_Glyphs };
+const ILI9341_FontDef ILI9341_Font_Terminus11x22 = { 0x20, 0xFF, 110, 17, 5, ILI9341_Font_Terminus11x22_Glyphs };
 
 static const ILI9341_GlyphDef ILI9341_Font_Terminus12x24b_Glyphs[] = {
     {  0,   0,  0,  0, 12, NULL}, /*   */
@@ -3520,7 +3520,7 @@ static const ILI9341_GlyphDef ILI9341_Font_Terminus12x24b_Glyphs[] = {
 };
 const ILI9341_FontDef ILI9341_Font_Terminus12x24b = { 0x20, 0xFF, 120, 19, 5, ILI9341_Font_Terminus12x24b_Glyphs };
 
-static const ILI9341_GlyphDef ILI9341_Font_Terminus12x24n_Glyphs[] = {
+static const ILI9341_GlyphDef ILI9341_Font_Terminus12x24_Glyphs[] = {
     {  0,   0,  0,  0, 12, NULL}, /*   */
     {  5,   0,  1, 15, 12, (const uint8_t[]){0xFF, 0xCE}}, /* ! */
     {  3,  12,  5,  5, 12, (const uint8_t[]){0x8C, 0x63, 0x18, 0x80}}, /* " */
@@ -3746,7 +3746,7 @@ static const ILI9341_GlyphDef ILI9341_Font_Terminus12x24n_Glyphs[] = {
     {  1,  -4,  9, 19, 12, (const uint8_t[]){0x80, 0x40, 0x20, 0x10, 0x0F, 0xE4, 0x0A, 0x03, 0x01, 0x80, 0xC0, 0x60, 0x30, 0x18, 0x0C, 0x0B, 0xF9, 0x00, 0x80, 0x40, 0x20, 0x00}}, /* þ */
     {  1,  -4,  9, 19, 12, (const uint8_t[]){0x22, 0x11, 0x08, 0x80, 0x08, 0x0C, 0x06, 0x03, 0x01, 0x80, 0xC0, 0x60, 0x30, 0x18, 0x0A, 0x0C, 0xFA, 0x01, 0x00, 0x80, 0x9F, 0x80}}, /* ÿ */
 };
-const ILI9341_FontDef ILI9341_Font_Terminus12x24n = { 0x20, 0xFF, 120, 19, 5, ILI9341_Font_Terminus12x24n_Glyphs };
+const ILI9341_FontDef ILI9341_Font_Terminus12x24 = { 0x20, 0xFF, 120, 19, 5, ILI9341_Font_Terminus12x24_Glyphs };
 
 static const ILI9341_GlyphDef ILI9341_Font_Terminus14x28b_Glyphs[] = {
     {  0,   0,  0,  0, 14, NULL}, /*   */
@@ -3976,7 +3976,7 @@ static const ILI9341_GlyphDef ILI9341_Font_Terminus14x28b_Glyphs[] = {
 };
 const ILI9341_FontDef ILI9341_Font_Terminus14x28b = { 0x20, 0xFF, 140, 22, 6, ILI9341_Font_Terminus14x28b_Glyphs };
 
-static const ILI9341_GlyphDef ILI9341_Font_Terminus14x28n_Glyphs[] = {
+static const ILI9341_GlyphDef ILI9341_Font_Terminus14x28_Glyphs[] = {
     {  0,   0,  0,  0, 14, NULL}, /*   */
     {  6,   0,  2, 18, 14, (const uint8_t[]){0xFF, 0xFF, 0xFF, 0x0F, 0xF0}}, /* ! */
     {  3,  14,  7,  6, 14, (const uint8_t[]){0xC7, 0x8F, 0x1E, 0x3C, 0x78, 0xC0}}, /* " */
@@ -4202,7 +4202,7 @@ static const ILI9341_GlyphDef ILI9341_Font_Terminus14x28n_Glyphs[] = {
     {  1,  -5, 11, 23, 14, (const uint8_t[]){0xC0, 0x18, 0x03, 0x00, 0x60, 0x0C, 0x01, 0xFF, 0x30, 0x36, 0x03, 0xC0, 0x78, 0x0F, 0x01, 0xE0, 0x3C, 0x07, 0x80, 0xF0, 0x1E, 0x03, 0xC0, 0xDF, 0xF3, 0x00, 0x60, 0x0C, 0x01, 0x80, 0x30, 0x00}}, /* þ */
     {  1,  -5, 11, 22, 14, (const uint8_t[]){0x31, 0x86, 0x30, 0xC6, 0x00, 0x0C, 0x07, 0x80, 0xF0, 0x1E, 0x03, 0xC0, 0x78, 0x0F, 0x01, 0xE0, 0x3C, 0x07, 0x80, 0xF0, 0x1B, 0x03, 0x3F, 0xE0, 0x0C, 0x01, 0x80, 0x30, 0x0C, 0xFF, 0x00}}, /* ÿ */
 };
-const ILI9341_FontDef ILI9341_Font_Terminus14x28n = { 0x20, 0xFF, 140, 22, 6, ILI9341_Font_Terminus14x28n_Glyphs };
+const ILI9341_FontDef ILI9341_Font_Terminus14x28 = { 0x20, 0xFF, 140, 22, 6, ILI9341_Font_Terminus14x28_Glyphs };
 
 static const ILI9341_GlyphDef ILI9341_Font_Terminus16x32b_Glyphs[] = {
     {  0,   0,  0,  0, 16, NULL}, /*   */
@@ -4432,7 +4432,7 @@ static const ILI9341_GlyphDef ILI9341_Font_Terminus16x32b_Glyphs[] = {
 };
 const ILI9341_FontDef ILI9341_Font_Terminus16x32b = { 0x20, 0xFF, 160, 26, 6, ILI9341_Font_Terminus16x32b_Glyphs };
 
-static const ILI9341_GlyphDef ILI9341_Font_Terminus16x32n_Glyphs[] = {
+static const ILI9341_GlyphDef ILI9341_Font_Terminus16x32_Glyphs[] = {
     {  0,   0,  0,  0, 16, NULL}, /*   */
     {  7,   0,  2, 20, 16, (const uint8_t[]){0xFF, 0xFF, 0xFF, 0xC0, 0xFF}}, /* ! */
     {  4,  16,  8,  6, 16, (const uint8_t[]){0xC3, 0xC3, 0xC3, 0xC3, 0xC3, 0xC3}}, /* " */
@@ -4658,4 +4658,4 @@ static const ILI9341_GlyphDef ILI9341_Font_Terminus16x32n_Glyphs[] = {
     {  2,  -5, 12, 25, 16, (const uint8_t[]){0xC0, 0x0C, 0x00, 0xC0, 0x0C, 0x00, 0xC0, 0x0C, 0x00, 0xFF, 0xCF, 0xFE, 0xC0, 0x7C, 0x03, 0xC0, 0x3C, 0x03, 0xC0, 0x3C, 0x03, 0xC0, 0x3C, 0x03, 0xC0, 0x3C, 0x07, 0xFF, 0xEF, 0xFC, 0xC0, 0x0C, 0x00, 0xC0, 0x0C, 0x00, 0xC0, 0x00}}, /* þ */
     {  2,  -5, 12, 25, 16, (const uint8_t[]){0x30, 0xC3, 0x0C, 0x30, 0xC3, 0x0C, 0x00, 0x00, 0x00, 0xC0, 0x3C, 0x03, 0xC0, 0x3C, 0x03, 0xC0, 0x3C, 0x03, 0xC0, 0x3C, 0x03, 0xC0, 0x3C, 0x03, 0xC0, 0x3E, 0x03, 0x7F, 0xF3, 0xFF, 0x00, 0x30, 0x03, 0x00, 0x77, 0xFE, 0x7F, 0xC0}}, /* ÿ */
 };
-const ILI9341_FontDef ILI9341_Font_Terminus16x32n = { 0x20, 0xFF, 160, 26, 6, ILI9341_Font_Terminus16x32n_Glyphs };
+const ILI9341_FontDef ILI9341_Font_Terminus16x32 = { 0x20, 0xFF, 160, 26, 6, ILI9341_Font_Terminus16x32_Glyphs };

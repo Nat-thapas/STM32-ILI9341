@@ -57,6 +57,10 @@ ILI9341_FillScreen(&ili9341_2, ILI9341_COLOR_WHITE);
 
 More informations and documentations are available in the header files. Examples and functionality tests are available in the [example](./example.c)
 
+## Touch screen calibration
+
+If the touch screen coordinate does not match with the LCD coordinate, you'll need to do some calibration. To do this, uncomment line 103 in [ili9341_touch.c](./Src/ili9341_touch.c) and either implement or change UART_Printf to whatever method you have of getting the data. Then modify the TOUCH_MIN/MAX_RAW_X/Y values in [ili9341_touch.h](./Inc/ili9341_touch.h) to match the minimum and maximum value you see. Note that sometime the touch screen cannot detect and digitize touch around the edges of the display, if this is the case and you want precise touch coordinate more than the ability to touch any coordinate on the display, extend the raw calibration value to both side to be more/less than the actual max/min values that you see.
+
 ## Notes
 
 1. To use non-ascii font (eg. Terminus for characters above 0x7E, Manop with Thai characters), you'll need to encode strings in the executable using the correct code page. To do this you'll need to add the compiler options `-finput-charset=UTF-8 -fexec-charset=<codepage>` which can be accomplished by adding the following lines to CMakeLists.txt

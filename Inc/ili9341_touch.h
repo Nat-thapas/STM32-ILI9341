@@ -45,7 +45,7 @@ void ILI9341_Touch_Deselect(const ILI9341_Touch_HandleTypeDef* ili9341_touch);
  * @param height Display height in pixels
  * @return Initialized ILI9341_Touch_HandleTypeDef structure
  */
-const ILI9341_Touch_HandleTypeDef ILI9341_Touch_Init(
+ILI9341_Touch_HandleTypeDef ILI9341_Touch_Init(
     SPI_HandleTypeDef* spi_handle,
     GPIO_TypeDef* cs_port,
     uint16_t cs_pin,

@@ -9,9 +9,9 @@
  * @note The glyph location is based on the bottom-left corner of the glyph.
  */
 typedef struct {
-    /** Bounding box X offset (right) */
+    /** Bounding box X offset (positive is right) */
     const int8_t bbX;
-    /** Bounding box Y offset (up) */
+    /** Bounding box Y offset (positive is up) */
     const int8_t bbY;
     /** Bounding box width */
     const int8_t bbW;
@@ -20,18 +20,25 @@ typedef struct {
     /** Horizontal advance to the next character */
     const int8_t advance;
     /** Pointer to the actual glyph data, the data format is binary bitmap stored as uint8_t array.
-     * Order is left-to-right, bottom-to-top. */
+     * Order is left-to-right, bottom-to-top. 1 is foreground, 0 is background (or none for transparent mode) */
     const uint8_t* data;
 } ILI9341_GlyphDef;
 
 /**
  * @brief Font definition structure
+ * @note The 0x7F (del) glyph will be used for out-of-range character
  */
 typedef struct {
     /** Start codepoint (inclusive) */
     const uint_fast8_t startCodepoint;
     /** End codepoint (inclusive) */
     const uint_fast8_t endCodepoint;
+    /** Average char width of the font, in 10 pixels (eg. average width 80 -> 80 / 10 = 8 pixels) */
+    const int_fast8_t averageWidth;
+    /** Font ascent (how far up does the font extend from baseline) */
+    const int_fast8_t ascent;
+    /** Font descent (how far down does the font extend from baseline) */
+    const int_fast8_t descent;
     /** Glyphs data */
     const ILI9341_GlyphDef* glyphs;
 } ILI9341_FontDef;

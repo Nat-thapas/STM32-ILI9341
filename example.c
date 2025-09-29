@@ -9,7 +9,8 @@
 #include "ili9341_touch.h"
 
 // Image array is generated with image_to_array.py
-#include "image.h"
+// Uncomment this and draw image test to test drawing an image
+// #include "image.h"
 
 int main(void) {
     ILI9341_HandleTypeDef ili9341 = ILI9341_Init(

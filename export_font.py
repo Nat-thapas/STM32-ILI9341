@@ -3,26 +3,34 @@ import os
 from bdflib import reader
 from natsort import natsorted
 
-CODEPOINT_START = 0x20
-CODEPOINT_END = 0xFF
+# Codepoint range must contain 0x7F (fallback codepoint in the renderer)
+CODEPOINT_START = 0x20  # Inclusive
+CODEPOINT_END = 0xFF  # Inclusive
 CODEPOINTS = [i for i in range(CODEPOINT_START, CODEPOINT_END + 1)]
+ENCODING = "ISO-8859-1"  # Latin 1
 
 
 def convert_file(file_path: str) -> str:
     with open(file_path, "rb") as file:
         font = reader.read_bdf(file)
 
-    output: str = f"const ILI9341_GlyphDef ILI9341_Font_{file_path.replace('/', '').replace('.', '').replace('bdf', '').replace('-', '')}_Glyphs[] = {{\n"
-    print(
-        f"extern ILI9341_FontDef ILI9341_Font_{file_path.replace('/', '').replace('.', '').replace('bdf', '').replace('-', '')};"
-    )
+    font_name = file_path.replace("/", "").replace(".", "").replace("bdf", "").replace("-", "")
+
+    output: str = f"\nstatic const ILI9341_GlyphDef ILI9341_Font_{font_name}_Glyphs[] = {{\n"
+    print(f"extern ILI9341_FontDef ILI9341_Font_{font_name};")
+
+    default_char = int(font.properties.get(b"DEFAULT_CHAR") or 32)
 
     for codepoint in CODEPOINTS:
-        glyph = font.get(codepoint) or font.get(ord(" "))
+        # Override 0x7F (del) to use the default char, since 0x7F is the fallback codepoint for the renderer
+        if codepoint == 0x7F:
+            glyph = font.get(default_char)
+        else:
+            glyph = font.get(codepoint) or font.get(default_char)
 
         if glyph is None:
             raise ValueError(
-                f"Glyph for codepoint {codepoint} not found in font at {file_path} and no fallback space character available."
+                f"Glyph for codepoint {codepoint} not found in font {file_path} and no default char is available."
             )
 
         bbX = glyph.bbX
@@ -82,6 +90,14 @@ def convert_file(file_path: str) -> str:
         longBytes = long.to_bytes((bbW * bbH + 7) // 8, "big")
         int_array = list(longBytes)
 
+        try:
+            c = bytes([codepoint]).decode(ENCODING)
+        except UnicodeDecodeError:
+            c = "�"
+
+        if not c.isprintable() and c not in ("\u00a0", "\u00ad"):
+            c = "�"
+
         output += " " * 4
         output += f"{{{bbX:3d}, {bbY:3d}, {bbW:2d}, {bbH:2d}, {glyph.advance:2d}, "
         if len(int_array) > 0:
@@ -90,22 +106,27 @@ def convert_file(file_path: str) -> str:
             output += "}"
         else:
             output += "NULL"
-        output += f"}}, /* {chr(codepoint)} */\n"
+        output += f"}}, /* {c} */\n"
 
     output += "};\n"
-    output += f"ILI9341_FontDef ILI9341_Font_{file_path.replace('/', '').replace('.', '').replace('bdf', '').replace('-', '')} = {{ {CODEPOINT_START}, {CODEPOINT_END}, ILI9341_Font_{file_path.replace('/', '').replace('.', '').replace('bdf', '').replace('-', '')}_Glyphs }};\n"
+    output += f"const ILI9341_FontDef ILI9341_Font_{font_name} = "
+    output += f"{{ 0x{CODEPOINT_START:02X}, 0x{CODEPOINT_END:02X}, "
+    output += f"{int(font.properties.get(b'AVERAGE_WIDTH') or font[65].bbW)}, "
+    output += f"{int(font.properties.get(b'FONT_ASCENT') or font[65].bbH)}, "
+    output += f"{int(font.properties.get(b'FONT_DESCENT') or 0)}, "
+    output += f"ILI9341_Font_{font_name}_Glyphs }};\n"
 
     return output
 
 
 def main() -> None:
     with open("ili9341_fonts.c", "w", encoding="utf-8") as file:
-        file.write('#include "ili9341_fonts.h"\n\n')
+        print("// Header declarations")
+        file.write('#include "ili9341_fonts.h"\n')
         for file_path in natsorted(os.listdir(".")):
             if not file_path.endswith(".bdf"):
                 continue
             file.write(convert_file(file_path))
-            file.write("\n")
 
 
 if __name__ == "__main__":

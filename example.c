@@ -46,6 +46,9 @@ int main(void) {
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
             ILI9341_COLOR_WHITE,
+            false,
+            1,
+            0,
             0
         );
         ILI9341_WriteString(
@@ -56,6 +59,9 @@ int main(void) {
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
             ILI9341_COLOR_WHITE,
+            false,
+            1,
+            0,
             0
         );
         ILI9341_WriteString(
@@ -66,6 +72,9 @@ int main(void) {
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
             ILI9341_COLOR_WHITE,
+            false,
+            1,
+            0,
             0
         );
         HAL_Delay(250);
@@ -80,6 +89,9 @@ int main(void) {
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
             ILI9341_COLOR_WHITE,
+            false,
+            1,
+            0,
             0
         );
         HAL_Delay(250);
@@ -102,6 +114,9 @@ int main(void) {
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
             ILI9341_COLOR_WHITE,
+            false,
+            1,
+            0,
             0
         );
         HAL_Delay(250);
@@ -128,6 +143,9 @@ int main(void) {
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
             ILI9341_COLOR_WHITE,
+            false,
+            1,
+            0,
             0
         );
         HAL_Delay(250);
@@ -140,6 +158,9 @@ int main(void) {
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
             ILI9341_COLOR_WHITE,
+            false,
+            1,
+            0,
             0
         );
         ILI9341_WriteString(
@@ -150,6 +171,9 @@ int main(void) {
             ILI9341_Font_Terminus12x24,
             ILI9341_COLOR_BLACK,
             ILI9341_COLOR_WHITE,
+            false,
+            1,
+            0,
             0
         );
         ILI9341_WriteString(
@@ -160,6 +184,9 @@ int main(void) {
             ILI9341_Font_Terminus12x24b,
             ILI9341_COLOR_BLACK,
             ILI9341_COLOR_WHITE,
+            false,
+            1,
+            0,
             0
         );
         ILI9341_WriteString(
@@ -170,6 +197,9 @@ int main(void) {
             ILI9341_Font_Terminus16x32,
             ILI9341_COLOR_BLACK,
             ILI9341_COLOR_WHITE,
+            false,
+            1,
+            0,
             0
         );
         ILI9341_WriteString(
@@ -180,6 +210,9 @@ int main(void) {
             ILI9341_Font_Terminus16x32b,
             ILI9341_COLOR_BLACK,
             ILI9341_COLOR_WHITE,
+            false,
+            1,
+            0,
             0
         );
         ILI9341_WriteString(
@@ -190,7 +223,10 @@ int main(void) {
             ILI9341_Font_Spleen5x8,
             ILI9341_COLOR_BLACK,
             ILI9341_COLOR_WHITE,
-            2
+            false,
+            1,
+            0,
+            0
         );
         ILI9341_WriteString(
             &ili9341,
@@ -200,7 +236,10 @@ int main(void) {
             ILI9341_Font_Spleen8x16,
             ILI9341_COLOR_BLACK,
             ILI9341_COLOR_WHITE,
-            2
+            false,
+            1,
+            0,
+            0
         );
         ILI9341_WriteString(
             &ili9341,
@@ -210,7 +249,10 @@ int main(void) {
             ILI9341_Font_Spleen16x32,
             ILI9341_COLOR_BLACK,
             ILI9341_COLOR_WHITE,
-            2
+            false,
+            1,
+            0,
+            0
         );
         HAL_Delay(250);
         waitForButtonPress();
@@ -224,6 +266,9 @@ int main(void) {
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
             ILI9341_COLOR_WHITE,
+            false,
+            1,
+            0,
             0
         );
         HAL_Delay(250);
@@ -240,6 +285,9 @@ int main(void) {
                 ILI9341_Font_Terminus8x16,
                 ILI9341_COLOR_BLACK,
                 ILI9341_COLOR_WHITE,
+                false,
+                1,
+                0,
                 0
             );
         }
@@ -258,6 +306,9 @@ int main(void) {
                 ILI9341_Font_Manop8x20,
                 ILI9341_COLOR_BLACK,
                 ILI9341_COLOR_WHITE,
+                false,
+                1,
+                0,
                 0
             );
         }
@@ -273,11 +324,14 @@ int main(void) {
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
             ILI9341_COLOR_WHITE,
+            false,
+            1,
+            0,
             0
         );
         HAL_Delay(250);
         waitForButtonPress();
-        ILI9341_WriteStringScaled(
+        ILI9341_WriteString(
             &ili9341,
             10,
             35,
@@ -285,10 +339,12 @@ int main(void) {
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
             ILI9341_COLOR_WHITE,
+            false,
             1,
+            0,
             0
         );
-        ILI9341_WriteStringScaled(
+        ILI9341_WriteString(
             &ili9341,
             10,
             70,
@@ -296,10 +352,12 @@ int main(void) {
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
             ILI9341_COLOR_WHITE,
+            false,
             2,
+            0,
             0
         );
-        ILI9341_WriteStringScaled(
+        ILI9341_WriteString(
             &ili9341,
             10,
             120,
@@ -307,10 +365,12 @@ int main(void) {
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
             ILI9341_COLOR_WHITE,
+            false,
             3,
+            0,
             0
         );
-        ILI9341_WriteStringScaled(
+        ILI9341_WriteString(
             &ili9341,
             40,
             245,
@@ -318,7 +378,9 @@ int main(void) {
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
             ILI9341_COLOR_WHITE,
+            false,
             3,
+            0,
             0
         );
         HAL_Delay(250);
@@ -329,68 +391,129 @@ int main(void) {
             &ili9341,
             5,
             15,
-            "Write string thai test",
+            "Write string newline / wrap test",
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
             ILI9341_COLOR_WHITE,
+            false,
+            1,
+            0,
             0
         );
         HAL_Delay(250);
         waitForButtonPress();
-        ILI9341_WriteStringScaled(
+        ILI9341_WriteString(
             &ili9341,
             10,
             35,
-            "Hello, World! สวัสดีชาวโลก",
-            ILI9341_Font_Manop8x20,
+            "Hello, World!\nThis is a test of the newline character.\nIt should move to the next line.",
+            ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
             ILI9341_COLOR_WHITE,
+            false,
             1,
+            0,
             0
         );
-        ILI9341_WriteStringScaled(
+        ILI9341_WriteString(
             &ili9341,
             10,
-            70,
-            "Hello, World! สวัสดีชาวโลก",
-            ILI9341_Font_Manop8x20,
+            100,
+            "Hello, World! This is a test of the wrap feature. It should automatically move to the next line when the "
+            "text "
+            "exceeds the width of the display.",
+            ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
             ILI9341_COLOR_WHITE,
-            2,
+            true,
+            1,
+            0,
             0
         );
-        ILI9341_WriteStringScaled(
+        ILI9341_WriteString(
             &ili9341,
             10,
-            120,
+            200,
+            "Hello, World! There's not a lot of space here."
+            "exceeds the width of the display.",
+            ILI9341_Font_Terminus8x16,
+            ILI9341_COLOR_BLACK,
+            ILI9341_COLOR_WHITE,
+            true,
+            3,
+            0,
+            0
+        );
+        HAL_Delay(250);
+        waitForButtonPress();
+
+        ILI9341_FillScreen(&ili9341, ILI9341_COLOR_WHITE);
+        ILI9341_WriteString(
+            &ili9341,
+            5,
+            15,
+            "Write string tracking, leading test",
+            ILI9341_Font_Terminus8x16,
+            ILI9341_COLOR_BLACK,
+            ILI9341_COLOR_WHITE,
+            false,
+            1,
+            0,
+            0
+        );
+        HAL_Delay(250);
+        waitForButtonPress();
+        ILI9341_WriteString(
+            &ili9341,
+            10,
+            35,
             "Hello, World!",
-            ILI9341_Font_Manop8x20,
+            ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
             ILI9341_COLOR_WHITE,
-            3,
+            false,
+            1,
+            8,
             0
         );
-        ILI9341_WriteStringScaled(
+        ILI9341_WriteString(
             &ili9341,
             10,
-            180,
-            "สวัสดีชาวโลก",
-            ILI9341_Font_Manop8x20,
+            60,
+            "Hello, World!",
+            ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
             ILI9341_COLOR_WHITE,
-            3,
+            false,
+            1,
+            -2,
             0
         );
-        ILI9341_WriteStringScaled(
+        ILI9341_WriteString(
             &ili9341,
-            40,
-            245,
-            "Hello สวัสดีชาวโลก",
-            ILI9341_Font_Manop8x20,
+            10,
+            95,
+            "Hello, World!\nThis a test of leading in case of multiple lines.",
+            ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
             ILI9341_COLOR_WHITE,
-            3,
-            0
+            false,
+            1,
+            0,
+            8
+        );
+        ILI9341_WriteString(
+            &ili9341,
+            10,
+            160,
+            "Hello, World! This a test of leading in case of multiple lines from automatic line wraps.",
+            ILI9341_Font_Terminus8x16,
+            ILI9341_COLOR_BLACK,
+            ILI9341_COLOR_WHITE,
+            true,
+            1,
+            0,
+            -4
         );
         HAL_Delay(250);
         waitForButtonPress();
@@ -404,6 +527,9 @@ int main(void) {
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
             ILI9341_COLOR_WHITE,
+            false,
+            1,
+            0,
             0
         );
         HAL_Delay(250);
@@ -421,36 +547,45 @@ int main(void) {
             "Hello, World!",
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_WHITE,
+            false,
+            1,
+            0,
             0
         );
-        ILI9341_WriteStringTransparentScaled(
+        ILI9341_WriteStringTransparent(
             &ili9341,
             10,
             70,
             "Hello, World!",
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_WHITE,
+            false,
             2,
+            0,
             0
         );
-        ILI9341_WriteStringTransparentScaled(
+        ILI9341_WriteStringTransparent(
             &ili9341,
             10,
             120,
             "Hello, World!",
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_WHITE,
+            false,
             3,
+            0,
             0
         );
-        ILI9341_WriteStringTransparentScaled(
+        ILI9341_WriteStringTransparent(
             &ili9341,
             40,
             245,
             "Hello, World!",
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_WHITE,
+            false,
             3,
+            0,
             0
         );
         HAL_Delay(250);
@@ -481,6 +616,9 @@ int main(void) {
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
             ILI9341_COLOR_WHITE,
+            false,
+            1,
+            0,
             0
         );
         HAL_Delay(250);
@@ -500,6 +638,9 @@ int main(void) {
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
             ILI9341_COLOR_WHITE,
+            false,
+            1,
+            0,
             0
         );
         HAL_Delay(250);
@@ -526,6 +667,9 @@ int main(void) {
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
             ILI9341_COLOR_WHITE,
+            false,
+            1,
+            0,
             0
         );
         HAL_Delay(250);
@@ -554,6 +698,9 @@ int main(void) {
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
             ILI9341_COLOR_WHITE,
+            false,
+            1,
+            0,
             0
         );
         HAL_Delay(250);
@@ -580,6 +727,9 @@ int main(void) {
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
             ILI9341_COLOR_WHITE,
+            false,
+            1,
+            0,
             0
         );
         HAL_Delay(250);
@@ -607,6 +757,9 @@ int main(void) {
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
             ILI9341_COLOR_WHITE,
+            false,
+            1,
+            0,
             0
         );
         HAL_Delay(250);
@@ -626,6 +779,9 @@ int main(void) {
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
             ILI9341_COLOR_WHITE,
+            false,
+            1,
+            0,
             0
         );
         HAL_Delay(250);
@@ -652,6 +808,9 @@ int main(void) {
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
             ILI9341_COLOR_WHITE,
+            false,
+            1,
+            0,
             0
         );
         HAL_Delay(250);
@@ -671,6 +830,9 @@ int main(void) {
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
             ILI9341_COLOR_WHITE,
+            false,
+            1,
+            0,
             0
         );
         HAL_Delay(250);
@@ -697,6 +859,9 @@ int main(void) {
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
             ILI9341_COLOR_WHITE,
+            false,
+            1,
+            0,
             0
         );
         HAL_Delay(250);
@@ -724,6 +889,9 @@ int main(void) {
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
             ILI9341_COLOR_WHITE,
+            false,
+            1,
+            0,
             0
         );
         HAL_Delay(250);
@@ -750,6 +918,9 @@ int main(void) {
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
             ILI9341_COLOR_WHITE,
+            false,
+            1,
+            0,
             0
         );
         HAL_Delay(250);
@@ -776,6 +947,9 @@ int main(void) {
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
             ILI9341_COLOR_WHITE,
+            false,
+            1,
+            0,
             0
         );
         HAL_Delay(250);
@@ -810,6 +984,9 @@ int main(void) {
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
             ILI9341_COLOR_WHITE,
+            false,
+            1,
+            0,
             0
         );
         HAL_Delay(250);
@@ -838,6 +1015,9 @@ int main(void) {
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
             ILI9341_COLOR_WHITE,
+            false,
+            1,
+            0,
             0
         );
         HAL_Delay(250);
@@ -861,6 +1041,9 @@ int main(void) {
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
             ILI9341_COLOR_WHITE,
+            false,
+            1,
+            0,
             0
         );
         HAL_Delay(250);
@@ -884,6 +1067,9 @@ int main(void) {
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
             ILI9341_COLOR_WHITE,
+            false,
+            1,
+            0,
             0
         );
         HAL_Delay(250);
@@ -906,6 +1092,9 @@ int main(void) {
             ILI9341_Font_Terminus8x16,
             ILI9341_COLOR_BLACK,
             ILI9341_COLOR_WHITE,
+            false,
+            1,
+            0,
             0
         );
         HAL_Delay(250);

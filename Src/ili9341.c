@@ -344,7 +344,7 @@ void ILI9341_SetBrightness(const ILI9341_HandleTypeDef* ili9341, uint_fast8_t br
 
     ILI9341_WriteCommand(ili9341, 0x51);
     {
-        uint8_t data[] = {brightness};
+        uint8_t data[] = {brightness & 0xFF};
         ILI9341_WriteData(ili9341, data, sizeof(data));
     }
 

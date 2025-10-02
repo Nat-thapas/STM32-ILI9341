@@ -48,6 +48,12 @@ ILI9341_Touch_HandleTypeDef ili9341_touch = ILI9341_Touch_Init(
 );
 ```
 
+SPI setup:
+
+- Data Size: 8 bits
+- Max speed for ILI9341: datasheet: 10 MHz, tested at: 50 MHz
+- Max speed for touch controller (XPT2046): datasheet: 2.5 MHz, tested at: ~500 kHz
+
 2. Use functions to do stuffs, always pass the pointer to the handle as the first argument so the function know what display you want to manipulate. If you have multiple displays, you can manipulate them one at a time.
 
 ```c

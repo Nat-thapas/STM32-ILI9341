@@ -22,60 +22,60 @@ See also:
 
 1. Initialize the ILI9341 and/or the touch controller using the init functions (the display and the touchscreen can be used independently). To use multiple displays, simply initialize each of them separately.
 
-```c
-ILI9341_HandleTypeDef ili9341 = ILI9341_Init(
-    &hspi5,
-    ILI9341_CS_GPIO_Port,
-    ILI9341_CS_Pin,
-    ILI9341_DC_GPIO_Port,
-    ILI9341_DC_Pin,
-    ILI9341_RST_GPIO_Port,
-    ILI9341_RST_Pin,
-    ILI9341_ROTATION_HORIZONTAL_1,
-    320,
-    240
-);
+   ```c
+   ILI9341_HandleTypeDef ili9341 = ILI9341_Init(
+       &hspi5,
+       ILI9341_CS_GPIO_Port,
+       ILI9341_CS_Pin,
+       ILI9341_DC_GPIO_Port,
+       ILI9341_DC_Pin,
+       ILI9341_RST_GPIO_Port,
+       ILI9341_RST_Pin,
+       ILI9341_ROTATION_HORIZONTAL_1,
+       320,
+       240
+   );
 
-ILI9341_Touch_HandleTypeDef ili9341_touch = ILI9341_Touch_Init(
-    &hspi4,
-    ILI9341_Touch_CS_GPIO_Port,
-    ILI9341_Touch_CS_Pin,
-    ILI9341_Touch_IRQ_GPIO_Port,
-    ILI9341_Touch_IRQ_Pin,
-    ILI9341_ROTATION_HORIZONTAL_1,
-    320,
-    240
-);
-```
+   ILI9341_Touch_HandleTypeDef ili9341_touch = ILI9341_Touch_Init(
+       &hspi4,
+       ILI9341_Touch_CS_GPIO_Port,
+       ILI9341_Touch_CS_Pin,
+       ILI9341_Touch_IRQ_GPIO_Port,
+       ILI9341_Touch_IRQ_Pin,
+       ILI9341_ROTATION_HORIZONTAL_1,
+       320,
+       240
+   );
+   ```
 
-SPI setup:
+   SPI setup:
 
-- Data Size: 8 bits
-- Max speed for ILI9341: datasheet: 10 MHz, tested at: 50 MHz
-- Max speed for touch controller (XPT2046): datasheet: 2.5 MHz, tested at: ~500 kHz
+   - Data Size: 8 bits
+   - Max speed for ILI9341: datasheet: 10 MHz, tested at: 50 MHz
+   - Max speed for touch controller (XPT2046): datasheet: 2.5 MHz, tested at: ~500 kHz
 
 2. Use functions to do stuffs, always pass the pointer to the handle as the first argument so the function know what display you want to manipulate. If you have multiple displays, you can manipulate them one at a time.
 
-```c
-ILI9341_FillScreen(&ili9341, ILI9341_COLOR_WHITE);
-ILI9341_WriteString(
-    &ili9341,
-    5,                          // x
-    15,                         // y
-    "Hello, World!",            // string
-    ILI9341_Font_Terminus8x16,  // font
-    ILI9341_COLOR_BLACK,        // foreground color
-    ILI9341_COLOR_WHITE,        // background color
-    false,                      // line wrap
-    1,                          // scale
-    0,                          // tracking
-    0                           // leading
-);
+   ```c
+   ILI9341_FillScreen(&ili9341, ILI9341_COLOR_WHITE);
+   ILI9341_WriteString(
+       &ili9341,
+       5,                          // x
+       15,                         // y
+       "Hello, World!",            // string
+       ILI9341_Font_Terminus8x16,  // font
+       ILI9341_COLOR_BLACK,        // foreground color
+       ILI9341_COLOR_WHITE,        // background color
+       false,                      // line wrap
+       1,                          // scale
+       0,                          // tracking
+       0                           // leading
+   );
 
-// Multiple displays
-ILI9341_FillScreen(&ili9341_1, ILI9341_COLOR_WHITE);
-ILI9341_FillScreen(&ili9341_2, ILI9341_COLOR_WHITE);
-```
+   // Multiple displays
+   ILI9341_FillScreen(&ili9341_1, ILI9341_COLOR_WHITE);
+   ILI9341_FillScreen(&ili9341_2, ILI9341_COLOR_WHITE);
+   ```
 
 More informations and documentations are available in the header files. Examples and functionality tests are available in the [example](./example.c)
 

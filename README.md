@@ -20,7 +20,7 @@ See also:
 
 ## Usage
 
-1. Initialize the ILI9341 and/or the touch controller using the init functions (the display and the touchscreen can be used independently)
+1. Initialize the ILI9341 and/or the touch controller using the init functions (the display and the touchscreen can be used independently). To use multiple displays, simply initialize each of them separately.
 
 ```c
 ILI9341_HandleTypeDef ili9341 = ILI9341_Init(
@@ -48,9 +48,25 @@ ILI9341_Touch_HandleTypeDef ili9341_touch = ILI9341_Touch_Init(
 );
 ```
 
-2. Use functions to do stuffs, always pass the pointer to the handle as the first argument so the function know what display you want to manipulate. You can have multiple displays and even on the same SPI bus, you'll need to initialize them separately and manipulate them one at a time.
+2. Use functions to do stuffs, always pass the pointer to the handle as the first argument so the function know what display you want to manipulate. If you have multiple displays, you can manipulate them one at a time.
 
 ```c
+ILI9341_FillScreen(&ili9341, ILI9341_COLOR_WHITE);
+ILI9341_WriteString(
+    &ili9341,
+    5,                          // x
+    15,                         // y
+    "Hello, World!",            // string
+    ILI9341_Font_Terminus8x16,  // font
+    ILI9341_COLOR_BLACK,        // foreground color
+    ILI9341_COLOR_WHITE,        // background color
+    false,                      // line wrap
+    1,                          // scale
+    0,                          // tracking
+    0                           // leading
+);
+
+// Multiple displays
 ILI9341_FillScreen(&ili9341_1, ILI9341_COLOR_WHITE);
 ILI9341_FillScreen(&ili9341_2, ILI9341_COLOR_WHITE);
 ```
@@ -79,7 +95,7 @@ If the touch screen coordinate does not match with the LCD coordinate, you'll ne
 
 2. To add custom font, use the [export_font.py](./export_font.py) script (place it in a folder along with .bdf files and run it). This is not a "production-ready" script and may require modifications to use with some fonts. After you generate the font data file with the script, rename it appropiately and add it to the Src folder, then add the font declarations to the [header file](./Inc/ili9341_fonts.h). Note that only .bdf bitmap fonts are supported currently.
 
-### Original license for [afiskon/stm32-ili9341][u0] (upstream of this fork)
+## Original license for [afiskon/stm32-ili9341][u0] (upstream of this fork)
 
 ```
 MIT License

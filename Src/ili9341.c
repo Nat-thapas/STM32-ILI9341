@@ -534,37 +534,25 @@ static void ILI9341_DrawGlyphFast(
     uint16_t buffer[ILI9341_DRAW_GLYPH_BUFFER_SIZE];
     size_t bufferIndex = 0;
 
-    int_fast32_t bitIndex = 0;
-
     ILI9341_SetAddressWindow(ili9341, startX + clipStartX, startY + clipStartY, startX + clipEndX, startY + clipEndY);
 
-    for (int_fast16_t row = 0; row < glyph.bbH; row++) {
-        for (int_fast16_t vScale = 0; vScale < scale; vScale++) {
-            int_fast16_t pixelRow = row * scale + vScale;
-            for (int_fast16_t col = 0; col < glyph.bbW; col++) {
-                uint8_t mask = 0x80 >> (bitIndex % 8);
-                int_fast16_t index = bitIndex / 8;
-                for (int_fast16_t hScale = 0; hScale < scale; hScale++) {
-                    int_fast16_t pixelCol = col * scale + hScale;
-                    if ((pixelRow >= clipStartY && pixelRow <= clipEndY) &&
-                        (pixelCol >= clipStartX && pixelCol <= clipEndX)) {
-                        if (glyph.data[index] & mask) {
-                            buffer[bufferIndex++] = color;
-                        } else {
-                            buffer[bufferIndex++] = bgColor;
-                        }
+    for (int_fast16_t row = clipStartY; row <= clipEndY; row++) {
+        for (int_fast16_t col = clipStartX; col <= clipEndX; col++) {
+            int_fast32_t bitIndex = row / scale * glyph.bbW + col / scale;
+            uint8_t mask = 0x80 >> (bitIndex % 8);
+            int_fast16_t index = bitIndex / 8;
 
-                        if (bufferIndex >= ILI9341_DRAW_GLYPH_BUFFER_SIZE) {
-                            ILI9341_WriteData(ili9341, (uint8_t*)buffer, bufferIndex * 2);
-                            bufferIndex = 0;
-                        }
-                    }
-                }
-                bitIndex++;
+            if (glyph.data[index] & mask) {
+                buffer[bufferIndex++] = color;
+            } else {
+                buffer[bufferIndex++] = bgColor;
             }
-            bitIndex -= glyph.bbW;
+
+            if (bufferIndex >= ILI9341_DRAW_GLYPH_BUFFER_SIZE) {
+                ILI9341_WriteData(ili9341, (uint8_t*)buffer, bufferIndex * 2);
+                bufferIndex = 0;
+            }
         }
-        bitIndex += glyph.bbW;
     }
 
     if (bufferIndex > 0) { ILI9341_WriteData(ili9341, (uint8_t*)buffer, bufferIndex * 2); }
@@ -768,15 +756,13 @@ void ILI9341_DrawImage(
 
         ILI9341_SetAddressWindow(ili9341, x + clipStartX, y + clipStartY, x + clipEndX, y + clipEndY);
 
-        for (int_fast16_t row = 0; row < h; row++) {
-            for (int_fast16_t col = 0; col < w; col++) {
-                if (row >= clipStartY && row <= clipEndY && col >= clipStartX && col <= clipEndX) {
-                    buffer[bufferIndex++] = data[row * w + col];
+        for (int_fast16_t row = clipStartY; row <= clipEndY; row++) {
+            for (int_fast16_t col = clipStartX; col <= clipEndX; col++) {
+                buffer[bufferIndex++] = data[row * w + col];
 
-                    if (bufferIndex >= ILI9341_DRAW_IMAGE_BUFFER_SIZE) {
-                        ILI9341_WriteData(ili9341, (uint8_t*)buffer, bufferIndex * 2);
-                        bufferIndex = 0;
-                    }
+                if (bufferIndex >= ILI9341_DRAW_IMAGE_BUFFER_SIZE) {
+                    ILI9341_WriteData(ili9341, (uint8_t*)buffer, bufferIndex * 2);
+                    bufferIndex = 0;
                 }
             }
         }

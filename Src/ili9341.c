@@ -460,19 +460,19 @@ static void ILI9341_FillRectangleFast(
     if ((x + w - 1) >= ili9341->width) w = ili9341->width - x;
     if ((y + h - 1) >= ili9341->height) h = ili9341->height - y;
 
-    uint8_t buffer[ILI9341_FILL_RECT_BUFFER_SIZE * 2];
+    uint16_t buffer[ILI9341_FILL_RECT_BUFFER_SIZE];
     size_t totalSize = w * h;
     size_t chunkSize = totalSize > ILI9341_FILL_RECT_BUFFER_SIZE ? ILI9341_FILL_RECT_BUFFER_SIZE : totalSize;
 
     color = (color >> 8) | (color << 8);
-    for (size_t i = 0; i < chunkSize; i++) { *(uint16_t*)&buffer[i * 2] = color; }
+    for (size_t i = 0; i < chunkSize; i++) { buffer[i] = color; }
 
     ILI9341_SetAddressWindow(ili9341, x, y, x + w - 1, y + h - 1);
 
     while (totalSize > 0) {
-        ILI9341_WriteData(ili9341, buffer, chunkSize * 2);
+        ILI9341_WriteData(ili9341, (uint8_t*)buffer, chunkSize * 2);
         totalSize -= chunkSize;
-        chunkSize = (totalSize > ILI9341_FILL_RECT_BUFFER_SIZE) ? ILI9341_FILL_RECT_BUFFER_SIZE : totalSize;
+        chunkSize = totalSize > ILI9341_FILL_RECT_BUFFER_SIZE ? ILI9341_FILL_RECT_BUFFER_SIZE : totalSize;
     }
 }
 
@@ -567,7 +567,7 @@ static void ILI9341_DrawGlyphFast(
         bitIndex += glyph.bbW;
     }
 
-    if (bufferIndex > 0) ILI9341_WriteData(ili9341, (uint8_t*)buffer, bufferIndex * 2);
+    if (bufferIndex > 0) { ILI9341_WriteData(ili9341, (uint8_t*)buffer, bufferIndex * 2); }
 }
 
 void ILI9341_WriteString(
@@ -753,13 +753,40 @@ void ILI9341_DrawImage(
         h = -h;
         y -= h - 1;
     }
-    if (x < 0 || y < 0 || x >= ili9341->width || y >= ili9341->height || (x + w - 1) >= ili9341->width ||
-        (y + h - 1) >= ili9341->height)
-        return;
+    if (x >= ili9341->width || y >= ili9341->height || x + w < 0 || y + h < 0) return;
 
     ILI9341_Select(ili9341);
-    ILI9341_SetAddressWindow(ili9341, x, y, x + w - 1, y + h - 1);
-    ILI9341_WriteData(ili9341, (uint8_t*)data, sizeof(uint16_t) * w * h);
+
+    if (x < 0 || y < 0 || (x + w - 1) >= ili9341->width || (y + h - 1) >= ili9341->height) {
+        int_fast16_t clipStartX = x < 0 ? -x : 0;
+        int_fast16_t clipStartY = y < 0 ? -y : 0;
+        int_fast16_t clipEndX = x + w - 1 >= ili9341->width ? ili9341->width - x - 1 : w - 1;
+        int_fast16_t clipEndY = y + h - 1 >= ili9341->height ? ili9341->height - y - 1 : h - 1;
+
+        uint16_t buffer[ILI9341_DRAW_IMAGE_BUFFER_SIZE];
+        size_t bufferIndex = 0;
+
+        ILI9341_SetAddressWindow(ili9341, x + clipStartX, y + clipStartY, x + clipEndX, y + clipEndY);
+
+        for (int_fast16_t row = 0; row < h; row++) {
+            for (int_fast16_t col = 0; col < w; col++) {
+                if (row >= clipStartY && row <= clipEndY && col >= clipStartX && col <= clipEndX) {
+                    buffer[bufferIndex++] = data[row * h + col];
+
+                    if (bufferIndex >= ILI9341_DRAW_IMAGE_BUFFER_SIZE) {
+                        ILI9341_WriteData(ili9341, (uint8_t*)buffer, bufferIndex * 2);
+                        bufferIndex = 0;
+                    }
+                }
+            }
+        }
+
+        if (bufferIndex > 0) { ILI9341_WriteData(ili9341, (uint8_t*)buffer, bufferIndex * 2); }
+    } else {
+        ILI9341_SetAddressWindow(ili9341, x, y, x + w - 1, y + h - 1);
+        ILI9341_WriteData(ili9341, (uint8_t*)data, sizeof(uint16_t) * w * h);
+    }
+
     ILI9341_Deselect(ili9341);
 }
 

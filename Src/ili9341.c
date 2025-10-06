@@ -771,7 +771,7 @@ void ILI9341_DrawImage(
         for (int_fast16_t row = 0; row < h; row++) {
             for (int_fast16_t col = 0; col < w; col++) {
                 if (row >= clipStartY && row <= clipEndY && col >= clipStartX && col <= clipEndX) {
-                    buffer[bufferIndex++] = data[row * h + col];
+                    buffer[bufferIndex++] = data[row * w + col];
 
                     if (bufferIndex >= ILI9341_DRAW_IMAGE_BUFFER_SIZE) {
                         ILI9341_WriteData(ili9341, (uint8_t*)buffer, bufferIndex * 2);

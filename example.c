@@ -601,11 +601,39 @@ int main(void) {
         //     ILI9341_Font_Terminus8x16,
         //     ILI9341_COLOR_BLACK,
         //     ILI9341_COLOR_WHITE,
+        //     false,
+        //     1,
+        //     0,
         //     0
         // );
         // HAL_Delay(250);
         // waitForButtonPress();
+        // ILI9341_FillScreen(&ili9341, ILI9341_COLOR_WHITE);
         // ILI9341_DrawImage(&ili9341, 20, 25, 280, 210, image_data);
+        // HAL_Delay(250);
+        // waitForButtonPress();
+        // ILI9341_FillScreen(&ili9341, ILI9341_COLOR_WHITE);
+        // ILI9341_DrawImage(&ili9341, 80, 25, 280, 210, image_data);
+        // HAL_Delay(250);
+        // waitForButtonPress();
+        // ILI9341_FillScreen(&ili9341, ILI9341_COLOR_WHITE);
+        // ILI9341_DrawImage(&ili9341, 20, 80, 280, 210, image_data);
+        // HAL_Delay(250);
+        // waitForButtonPress();
+        // ILI9341_FillScreen(&ili9341, ILI9341_COLOR_WHITE);
+        // ILI9341_DrawImage(&ili9341, -40, 25, 280, 210, image_data);
+        // HAL_Delay(250);
+        // waitForButtonPress();
+        // ILI9341_FillScreen(&ili9341, ILI9341_COLOR_WHITE);
+        // ILI9341_DrawImage(&ili9341, 20, -40, 280, 210, image_data);
+        // HAL_Delay(250);
+        // waitForButtonPress();
+        // ILI9341_FillScreen(&ili9341, ILI9341_COLOR_WHITE);
+        // ILI9341_DrawImage(&ili9341, 80, 80, 280, 210, image_data);
+        // HAL_Delay(250);
+        // waitForButtonPress();
+        // ILI9341_FillScreen(&ili9341, ILI9341_COLOR_WHITE);
+        // ILI9341_DrawImage(&ili9341, -40, -40, 280, 210, image_data);
         // HAL_Delay(250);
         // waitForButtonPress();
 

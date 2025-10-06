@@ -43,6 +43,7 @@
 
 // Other constants
 #define ILI9341_FILL_RECT_BUFFER_SIZE 512   // pixels x 2 bytes per pixel = 1024 bytes
+#define ILI9341_DRAW_IMAGE_BUFFER_SIZE 512  // pixels x 2 bytes per pixel = 1024 bytes
 #define ILI9341_DRAW_GLYPH_BUFFER_SIZE 512  // pixels x 2 bytes per pixel = 1024 bytes
 #define FALLBACK_CODEPOINT 0x7F
 

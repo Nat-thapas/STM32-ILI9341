@@ -331,8 +331,8 @@ void ILI9341_DrawCircle(
  */
 void ILI9341_DrawCircleThick(
     const ILI9341_HandleTypeDef* ili9341,
-    int_fast16_t x0,
-    int_fast16_t y0,
+    int_fast16_t x,
+    int_fast16_t y,
     int_fast16_t r,
     uint16_t color,
     int_fast16_t thickness
@@ -365,8 +365,8 @@ void ILI9341_FillCircle(
  */
 void ILI9341_DrawEllipse(
     const ILI9341_HandleTypeDef* ili9341,
-    int_fast16_t xc,
-    int_fast16_t yc,
+    int_fast16_t x,
+    int_fast16_t y,
     int_fast16_t rx,
     int_fast16_t ry,
     uint16_t color
@@ -380,12 +380,12 @@ void ILI9341_DrawEllipse(
  * @param rx Horizontal radius of the ellipse
  * @param ry Vertical radius of the ellipse
  * @param color 16-bit ellipse color in RGB565 format
- * @param thickness Ellipse line thickness in pixels, must be >= 1
+ * @param thickness Ellipse line thickness in pixels, must be >= 1 and <= min(rx, ry)
  */
 void ILI9341_DrawEllipseThick(
     const ILI9341_HandleTypeDef* ili9341,
-    int_fast16_t xc,
-    int_fast16_t yc,
+    int_fast16_t x,
+    int_fast16_t y,
     int_fast16_t rx,
     int_fast16_t ry,
     uint16_t color,
@@ -403,10 +403,142 @@ void ILI9341_DrawEllipseThick(
  */
 void ILI9341_FillEllipse(
     const ILI9341_HandleTypeDef* ili9341,
-    int_fast16_t xc,
-    int_fast16_t yc,
+    int_fast16_t x,
+    int_fast16_t y,
     int_fast16_t rx,
     int_fast16_t ry,
+    uint16_t color
+);
+
+/**
+ * @brief Draw a circular arc outline
+ * @param ili9341 Pointer to ILI9341 handle structure
+ * @param x X coordinate of the center of the arc
+ * @param y Y coordinate of the center of the arc
+ * @param r Radius of the arc
+ * @param start Start angle of the arc in degrees, 0 degrees is up, positive angles are clockwise
+ * @param sweep Sweep angle of the arc in degrees, positive values are clockwise
+ * @param color 16-bit arc color in RGB565 format
+ */
+void ILI9341_DrawArc(
+    const ILI9341_HandleTypeDef* ili9341,
+    int_fast16_t x,
+    int_fast16_t y,
+    int_fast16_t r,
+    float start,
+    float sweep,
+    uint16_t color
+);
+
+/**
+ * @brief Draw a thick circular arc outline
+ * @param ili9341 Pointer to ILI9341 handle structure
+ * @param x X coordinate of the center of the arc
+ * @param y Y coordinate of the center of the arc
+ * @param r Radius of the arc
+ * @param start Start angle of the arc in degrees, 0 degrees is up, positive angles are clockwise
+ * @param sweep Sweep angle of the arc in degrees, positive values are clockwise
+ * @param color 16-bit arc color in RGB565 format
+ * @param thickness Arc line thickness in pixels, must be >= 1 and <= r
+ * @param cap true to draw rounded line caps, false for no caps
+ */
+void ILI9341_DrawArcThick(
+    const ILI9341_HandleTypeDef* ili9341,
+    int_fast16_t x,
+    int_fast16_t y,
+    int_fast16_t r,
+    float start,
+    float sweep,
+    uint16_t color,
+    int_fast16_t thickness,
+    bool cap
+);
+
+/**
+ * @brief Fill a circular sector (partial circle)
+ * @param ili9341 Pointer to ILI9341 handle structure
+ * @param x X coordinate of the center of the sector
+ * @param y Y coordinate of the center of the sector
+ * @param r Radius of the sector
+ * @param start Start angle of the sector in degrees, 0 degrees is up, positive angles are clockwise
+ * @param sweep Sweep angle of the sector in degrees, positive values are clockwise
+ * @param color 16-bit sector color in RGB565 format
+ */
+void ILI9341_FillPartialCircle(
+    const ILI9341_HandleTypeDef* ili9341,
+    int_fast16_t x,
+    int_fast16_t y,
+    int_fast16_t r,
+    float start,
+    float sweep,
+    uint16_t color
+);
+
+/**
+ * @brief Draw a thin ellipse arc outline
+ * @param ili9341 Pointer to ILI9341 handle structure
+ * @param x X coordinate of the center of the ellipse
+ * @param y Y coordinate of the center of the ellipse
+ * @param rx Horizontal radius of the ellipse
+ * @param ry Vertical radius of the ellipse
+ * @param start Start angle of the arc in degrees, 0 degrees is up, positive angles are clockwise
+ * @param sweep Sweep angle of the arc in degrees, positive values are clockwise
+ * @param color 16-bit arc color in RGB565 format
+ */
+void ILI9341_DrawEllipseArc(
+    const ILI9341_HandleTypeDef* ili9341,
+    int_fast16_t x,
+    int_fast16_t y,
+    int_fast16_t rx,
+    int_fast16_t ry,
+    float start,
+    float sweep,
+    uint16_t color
+);
+
+/**
+ * @brief Draw a thick ellipse arc outline
+ * @param ili9341 Pointer to ILI9341 handle structure
+ * @param x X coordinate of the center of the ellipse
+ * @param y Y coordinate of the center of the ellipse
+ * @param rx Horizontal radius of the ellipse
+ * @param ry Vertical radius of the ellipse
+ * @param start Start angle of the arc in degrees, 0 degrees is up, positive angles are clockwise
+ * @param sweep Sweep angle of the arc in degrees, positive values are clockwise
+ * @param color 16-bit arc color in RGB565 format
+ * @param thickness Arc line thickness in pixels, must be >= 1 and <= min(rx, ry)
+ */
+void ILI9341_DrawEllipseArcThick(
+    const ILI9341_HandleTypeDef* ili9341,
+    int_fast16_t x,
+    int_fast16_t y,
+    int_fast16_t rx,
+    int_fast16_t ry,
+    float start,
+    float sweep,
+    uint16_t color,
+    int_fast16_t thickness
+);
+
+/**
+ * @brief Fill a partial ellipse (elliptical sector)
+ * @param ili9341 Pointer to ILI9341 handle structure
+ * @param x X coordinate of the center of the ellipse
+ * @param y Y coordinate of the center of the ellipse
+ * @param rx Horizontal radius of the ellipse
+ * @param ry Vertical radius of the ellipse
+ * @param start Start angle of the sector in degrees, 0 degrees is up, positive angles are clockwise
+ * @param sweep Sweep angle of the sector in degrees, positive values are clockwise
+ * @param color 16-bit sector color in RGB565 format
+ */
+void ILI9341_FillPartialEllipse(
+    const ILI9341_HandleTypeDef* ili9341,
+    int_fast16_t x,
+    int_fast16_t y,
+    int_fast16_t rx,
+    int_fast16_t ry,
+    float start,
+    float sweep,
     uint16_t color
 );
 
